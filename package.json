@@ -1,0 +1,20 @@
+{
+  "name": "quirkbot-compiler",
+  "version": "0.2.0",
+  "author": "Quirkbot",
+  "description": "Cloud service that compiles Quirkbot programs.",
+  "homepage": "https://github.com/Quirkbot/QuirkbotCompiler",
+  "dependencies": {
+    "npm-arduino-avr-gcc" : "4.8.1-arduino5",
+    "npm-arduino-builder" : "1.1.0",
+    "quirkbot-arduino-library" : "1.0.1",
+    "quirkbot-arduino-hardware" : "0.3.1",
+    "throng" : "x",
+    "request" : "x",
+    "mongoose" : "x"
+    },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Quirkbot/QuirkbotCompiler.git"
+  }
+}
