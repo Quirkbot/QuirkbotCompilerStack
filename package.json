@@ -8,10 +8,10 @@
     "npm-arduino-avr-gcc" : "4.8.1-arduino5",
     "npm-arduino-builder" : "1.1.0",
     "quirkbot-arduino-library" : "1.0.1",
-    "quirkbot-arduino-hardware" : "0.3.1",
-    "throng" : "x",
-    "request" : "x",
-    "mongoose" : "x"
+    "quirkbot-arduino-hardware" : "0.3.2",
+    "request" : "2.65.0",
+    "mongoose" : "4.2.5",
+    "throng" : "1.0.1"
     },
   "repository": {
     "type": "git",
