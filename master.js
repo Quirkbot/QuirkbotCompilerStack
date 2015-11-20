@@ -62,66 +62,6 @@ pass()
 	console.log('Error saving reset firmware.', error);
 })
 
-/**
- * Assemble all object files into one library
- **/
-/*pass()
-.then(findFiles(path.resolve('.tmp', 'libraries'), '.o'))
-.then(function (list) {
-	list.forEach(function (object) {
-		var assembleCommad =
-			path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-ar') + ' ' +
-			'rcs ' +
-			path.resolve('.tmp', 'libraries', 'libraries.a') + ' ' +
-			object;
-		console.log(assembleCommad);
-		console.log(execSync(assembleCommad).toString('utf8'));
-	});
-})
-.catch(function (error) {
-	console.log('error',error)
-});*/
-/**
- * Precompile Quirkbot header
- **/
-/*execSync('cd .tmp; mkdir precompiled');
-var precompileHeaderCommand =
-	path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-g++')+ ' '+
-	'-g ' +
-	'-Os ' +
-	'-w ' +
-	'-c ' +
-	'-std=gnu++11 ' +
-	'-fno-exceptions ' +
-	'-ffunction-sections ' +
-	'-fdata-sections ' +
-	'-fno-threadsafe-statics  ' +
-	'-MMD ' +
-	'-mmcu='+boardSettings['quirkbot.build.mcu']+' ' +
-	'-DF_CPU='+boardSettings['quirkbot.build.f_cpu']+' ' +
-	'-DARDUINO_'+boardSettings['quirkbot.build.board']+' ' +
-	'-DARDUINO=10600 ' +
-	'-DARDUINO_ARCH_AVR ' +
-	'-DUSB_VID='+boardSettings['quirkbot.build.vid']+' ' +
-	'-DUSB_PID='+boardSettings['quirkbot.build.pid']+' ' +
-	'-DUSB_MANUFACTURER='+boardSettings['quirkbot.build.usb_manufacturer']+' ' +
-	'-DUSB_PRODUCT='+boardSettings['quirkbot.build.usb_product']+' ' +
-	((boardSettings['quirkbot.build.core']) ?
-		'-I' + path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'cores', boardSettings['quirkbot.build.core']) : '') + ' ' +
-	((boardSettings['quirkbot.build.variant']) ?
-		'-I' + path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'variants', boardSettings['quirkbot.build.variant']) : '') + ' ' +
-	'-I' + path.resolve('node_modules', 'quirkbot-arduino-library') + ' ' +
-	'-I' + path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'libraries', 'HID') + ' ' +
-	'-I' + path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'libraries', 'Keyboard', 'src') + ' ' +
-	'-I' + path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'libraries', 'Mouse', 'src') + ' ' +
-	'-I' + path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'libraries', 'Servo', 'src') + ' ' +
-	path.resolve('node_modules', 'quirkbot-arduino-library', 'Quirkbot.h') + ' ' +
-	'-o ' + path.resolve('.tmp', 'precompiled', 'Quirkbot.h.gch');
-console.log(precompileHeaderCommand);
-console.log('========');
-execSync(precompileHeaderCommand.toString('utf8'));
-console.log('-----------------------');*/
-
 var forks = [];
 var initForks = function (argument) {
 	var numForks = process.env.WEB_CONCURRENCY || require('os').cpus().length;
