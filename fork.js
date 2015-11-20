@@ -41,7 +41,7 @@ var _cacheCompileCommand = function () {
 			'-I' + path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'cores', boardSettings['quirkbot.build.core']) : '') + ' ' +
 		((boardSettings['quirkbot.build.variant']) ?
 			'-I' + path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'variants', boardSettings['quirkbot.build.variant']) : '') + ' ' +
-		'-I' + path.resolve('node_modules', 'quirkbot-arduino-library') + ' ' +
+		'-I' + path.resolve('node_modules', 'quirkbot-arduino-library', 'src') + ' ' +
 		'-I' + path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'libraries', 'HID') + ' ' +
 		'-I' + path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'libraries', 'Keyboard', 'src') + ' ' +
 		'-I' + path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'libraries', 'Mouse', 'src') + ' ' +
