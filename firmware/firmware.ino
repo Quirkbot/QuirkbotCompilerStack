@@ -11,8 +11,7 @@ Led led4;
 ServoMotor servoMotor1;
 ServoMotor servoMotor2;
 
-void start(){
-
+void setup(){
   wave1.length = 0.8;
   wave1.type = WAVE_SINE;
   wave1.min = 0.25;
@@ -47,4 +46,7 @@ void start(){
   servoMotor2.position.connect(wave2.out);
   servoMotor2.place = SERVO_BP2;
 
+}
+
+void loop(){
 }
