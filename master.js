@@ -15,7 +15,8 @@ var boardSettings = require('./boardSettings').settings;
 /**
  * Clean up temporary directories
  **/
-execSync('rm -r .tmp; mkdir .tmp');
+execSync('rm -r .tmp-build; mkdir .tmp-build');
+execSync('rm -r .tmp-sketches; mkdir .tmp-sketches');
 /**
  * Save configs regarding the library and hardware info
  **/
@@ -46,7 +47,7 @@ var precompileCommand =
 	'-tools="' + path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools') + '" ' +
 	'-tools="' + path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
 	'-fqbn="quirkbot-arduino-hardware:avr:quirkbot" ' +
-	'-build-path="' + path.resolve('.tmp') + '" ' +
+	'-build-path="' + path.resolve('.tmp-build') + '" ' +
 	'-verbose ' +
 	path.resolve('firmware', 'firmware.ino');
 console.log(precompileCommand);
@@ -54,7 +55,7 @@ console.log('========');
 console.log(execSync(precompileCommand).toString('utf8'));
 console.log('-----------------------');
 pass()
-.then(readFile(path.resolve('.tmp','firmware.ino.hex')))
+.then(readFile(path.resolve('.tmp-build','firmware.ino.hex')))
 .then(function (hex) {
 	database.setConfig('firmware-reset',hex);
 })
