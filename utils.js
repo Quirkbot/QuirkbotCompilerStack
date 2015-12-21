@@ -1,6 +1,7 @@
 "use strict";
 
 var fs = require('fs');
+var ncp = require('ncp');
 var path = require('path');
 var exec = require('child_process').exec;
 
@@ -45,6 +46,23 @@ var writeFile = function(path, content){
 	}
 }
 exports.writeFile = writeFile;
+
+var deleteFile = function(path){
+	return function(){
+		var payload = arguments;
+		var promise = function(resolve, reject){
+			fs.unlink(path, function (error) {
+				if (error) {
+					reject(error)
+					return;
+				}
+				resolve.apply(null, payload)
+			});
+		}
+		return new Promise(promise);
+	}
+}
+exports.deleteFile = deleteFile;
 
 var readFile = function(path){
 	return function(){
@@ -98,6 +116,24 @@ var readDir = function(path){
 	}
 }
 exports.readDir = readDir;
+
+var copyDir = function(source, destination){
+	return function(){
+		var payload = arguments;
+
+		var promise = function(resolve, reject){
+			ncp(source, destination, function (error) {
+				if (error) {
+					reject(error)
+					return;
+				}
+				resolve.apply(null, payload)
+			});
+		}
+		return new Promise(promise);
+	}
+}
+exports.copyDir = copyDir;
 
 var findFiles = function(startPath, filter, files){
 	files = files || [];
