@@ -57,8 +57,8 @@ var _cacheCompileCoreCommand = function () {
 	pass()
 	.then(findFiles(path.resolve('.tmp-build', 'core'), '.o'))
 	.then(function (list) {
-		_compileCoreCommandCache =
-			path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-gcc')+ ' '+
+		_compileCoreCommandCache = '';
+			/*path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-gcc')+ ' '+
 			'-c ' +
 			'-g ' +
 			'-x ' +
@@ -77,7 +77,7 @@ var _cacheCompileCoreCommand = function () {
 			((boardSettings['quirkbot.build.variant']) ?
 				'-I' + path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'variants', boardSettings['quirkbot.build.variant']) : '') + ' ' +
 			path.resolve('node_modules', 'quirkbot-arduino-hardware', 'avr', 'cores', boardSettings['quirkbot.build.core'], 'wiring_pulse.S') + ' ' +
-			'-o ' + path.resolve('.tmp-build', 'core_{{id}}_wiring_pulse.S.o') +'\n';
+			'-o ' + path.resolve('.tmp-build', 'core_{{id}}_wiring_pulse.S.o') +'\n';*/
 
 		list.forEach(function (object) {
 
@@ -86,12 +86,12 @@ var _cacheCompileCoreCommand = function () {
 				'rcs ' +
 				path.resolve('.tmp-build', 'core_{{id}}_core.a')+ ' ';
 
-			if(object.indexOf('wiring_pulse.S.o') == -1){
+			//if(object.indexOf('wiring_pulse.S.o') == -1){
 				_compileCoreCommandCache += object + '\n';
-			}
-			else {
-				_compileCoreCommandCache += path.resolve('.tmp-build', 'core_{{id}}_wiring_pulse.S.o') + '\n';
-			}
+			//}
+			//else {
+			//	_compileCoreCommandCache += path.resolve('.tmp-build', 'core_{{id}}_wiring_pulse.S.o') + '\n';
+			//}
 
 		});
 
