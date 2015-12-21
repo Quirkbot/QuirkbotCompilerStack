@@ -1,7 +1,7 @@
 .DS_Store
 node_modules
 npm-debug.log
-.tmp
-.tmp-sketches
-.tmp-build
+.tmp*
+.tmp-sketches*
+.tmp-build*
 newrelic_agent.log

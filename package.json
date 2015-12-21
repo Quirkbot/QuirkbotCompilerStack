@@ -12,6 +12,7 @@
     "quirkbot-arduino-hardware": "0.3.6",
     "quirkbot-arduino-library": "2.0.2",
     "request": "2.65.0",
+    "rimraf": "^2.4.4",
     "throng": "1.0.1"
   },
   "repository": {

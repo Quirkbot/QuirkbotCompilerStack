@@ -32,29 +32,34 @@ var compileAndVerifyResult = function(){
 		.then(requestResultFromResponse())
 		.then(verifyResult('300ms', 'green'))*/
 
-		.then(delay(500))
+		.then(delay(3000))
 		.then(requestResultFromResponse())
-		.then(verifyResult('500ms', 'green'))
+		.then(verifyResult('3s', 'green'))
 
-		.then(delay(500))
+		.then(delay(1000))
 		.then(requestResultFromResponse())
-		.then(verifyResult('1s', 'orange'))
+		.then(verifyResult('4s', 'green'))
+
+		.then(delay(1000))
+		.then(requestResultFromResponse())
+		.then(verifyResult('5s', 'orange'))
+
+		.then(delay(1000))
+		.then(requestResultFromResponse())
+		.then(verifyResult('6s', 'red'))
 
 		.then(delay(2000))
 		.then(requestResultFromResponse())
-		.then(verifyResult('3s', 'red'))
+		.then(verifyResult('8s', 'red'))
 
-		.then(delay(3000))
-		.then(requestResultFromResponse())
-		.then(verifyResult('5s', 'red'))
-
-		.then(delay(5000))
+		.then(delay(2000))
 		.then(requestResultFromResponse())
 		.then(verifyResult('10s', 'black'))
 
 		.then(delay(5000))
 		.then(requestResultFromResponse())
 		.then(verifyResult('15s', 'black'))
+
 
 		.then(function(response){
 			console.log('Death!', response)

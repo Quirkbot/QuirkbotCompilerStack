@@ -105,12 +105,12 @@ var prepareCluster = function(){
 			var fork = {};
 			forks[label] = fork;
 			fork.label = label;
-			fork.free = true;
+			fork.free = false;
 			fork.worker = cluster.fork();
 			fork.currentWorkerId = fork.worker.id;
 
 			fork.worker.on('message', function(message) {
-				if(message.type == 'success'){
+				if(message.type === 'success'){
 					database.setReady(message.data.id, message.data.hex, message.data.error);
 
 					//console.log('ask', message.data.worker)
@@ -120,6 +120,14 @@ var prepareCluster = function(){
 						doJob(fork);
 					}
 
+				}
+				else if(message.type === 'init'){
+					console.log('Fork is ready: '+ label);
+					var fork = forks[message.data.worker];
+					if(!fork.worker.isDead()){
+						fork.free = true;
+						doJob(fork);
+					}
 				}
 			});
 

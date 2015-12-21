@@ -1,5 +1,5 @@
-var SERVER = "https://quirkbot-compiler.herokuapp.com";
-//var SERVER = "http://localhost:8080";
+//var SERVER = "https://quirkbot-compiler.herokuapp.com";
+var SERVER = "http://localhost:8080";
 
 var _request = function(url){
 	return function(){
@@ -68,7 +68,7 @@ var requestProgram = function(url, instant){
 
 		var promise = function(resolve, reject){
 			pass()
-			.then(request(url + '/%23include%20"Quirkbot.h"%0A%0ALed%20led%3B%0AWave%20wave%3B%0A%0Avoid%20start()%7B%0A%09led.place%20%3D%20LE%3B%0A%09wave.out.connect(led.in)%3B%0A%7D%0A', instant))
+			.then(request(url + '/%2F%2F%20include%20the%20Quirkbot%20library%20to%20your%20program%3A%0A%23include%20%22Quirkbot.h%22%0A%0A%2F%2F%20create%20your%20Quirkbot%20nodes%20here%3A%0AWave%20wave1%3B%0ALed%20led1%3B%0ALed%20led2%3B%0ALed%20led3%3B%0ALed%20led4%3B%0A%0A%2F%2F%20create%20your%20other%20Arduino%20variables%20and%20functions%20here%3A%0A%0Avoid%20setup()%7B%0A%09%2F%2F%20setup%20your%20Quirkbot%20nodes%20here%3A%0A%09wave1.length%20%3D%201%3B%0A%09wave1.type%20%3D%20WAVE_SINE%3B%0A%09wave1.min%20%3D%200%3B%0A%09wave1.max%20%3D%201%3B%0A%09wave1.offset%20%3D%200%3B%0A%0A%09led1.light.connect(wave1.out)%3B%0A%09led1.place%20%3D%20RE%3B%0A%0A%09led2.light.connect(wave1.out)%3B%0A%09led2.place%20%3D%20LE%3B%0A%0A%09led3.light.connect(wave1.out)%3B%0A%09led3.place%20%3D%20LM%3B%0A%0A%09led4.light.connect(wave1.out)%3B%0A%09led4.place%20%3D%20RM%3B%0A%0A%09%2F%2F%20put%20your%20other%20Arduino%20setup%20code%20here%2C%20to%20run%20once%3A%0A%0A%7D%0A%0Avoid%20loop()%7B%0A%09%2F%2F%20put%20your%20main%20Arduino%20code%20here%2C%20to%20run%20repeatedly%3A%0A%0A%7D', instant))
 			.then(resolve)
 		}
 		return new Promise(promise);
@@ -81,7 +81,7 @@ var requestProgramCC = function(instant){
 
 		var promise = function(resolve, reject){
 			pass()
-			.then(requestProgram(SERVER, instant))
+			.then(requestProgram((getParameterByName('s') || SERVER), instant))
 			.then(resolve)
 		}
 		return new Promise(promise);
@@ -92,7 +92,7 @@ var requestResult = function(id, instant){
 
 		var promise = function(resolve, reject){
 			pass()
-			.then(request(SERVER + '/i' + id, instant))
+			.then(request((getParameterByName('s') || SERVER) + '/i' + id, instant))
 			.then(resolve)
 		}
 		return new Promise(promise);
