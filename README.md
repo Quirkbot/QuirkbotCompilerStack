@@ -26,7 +26,7 @@ The service is depends on OS specific precompiled packages:
 
 At the time of this writing these packages are [provided by Quirkbot](https://github.com/Quirkbot/npm-arduino-publisher), in their own cloud infrastructure - and they can shut it down at anytime.
 
-These packages simply mirror the files officialy distributed by Arduino.
+These packages simply mirror the files officially distributed by Arduino.
 
 # Installation
 
