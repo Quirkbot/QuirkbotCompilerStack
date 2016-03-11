@@ -196,3 +196,24 @@ exports.getConfig = function(key){
 	}
 	return new Promise(promise);
 }
+
+
+exports.removeConfig = function(key){
+	var promise = function(resolve, reject){
+		ConfigModel.findOneAndRemove(
+			{
+				key: key
+			},
+			function (error, instance) {
+				if(!error && instance){
+					resolve(instance);
+				}
+				else {
+					console.log(error)
+					reject(error);
+				}
+			}
+		)
+	}
+	return new Promise(promise);
+}

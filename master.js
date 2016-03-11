@@ -65,6 +65,7 @@ var compileResetFirmaware = function() {
 			'-tools="' + path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools') + '" ' +
 			'-tools="' + path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
 			'-fqbn="quirkbot-arduino-hardware:avr:quirkbot" ' +
+			'-ide-version=10607 ' +
 			'-build-path="' + path.resolve('.tmp-build') + '" ' +
 			'-verbose ' +
 			path.resolve('firmware', 'firmware.ino');
@@ -74,7 +75,7 @@ var compileResetFirmaware = function() {
 		pass()
 		.then(execute(precompileCommand))
 		.then(function(result){
-			console.log(result.stdout)
+			console.log(result)
 		})
 		.then(readFile(path.resolve('.tmp-build','firmware.ino.hex')))
 		.then(function (hex) {
@@ -83,6 +84,7 @@ var compileResetFirmaware = function() {
 		})
 		.catch(function (error) {
 			console.log('Error saving reset firmware.', error);
+			database.removeConfig('firmware-reset');
 			reject(error)
 		});
 	});

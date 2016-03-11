@@ -20,8 +20,11 @@ var execute = function(command, resolveError){
 		var payload = arguments;
 
 		var promise = function(resolve, reject){
-			var process = exec(command, function (error, stdout, stderr) {
-				if (!resolveError && error !== null) reject(stderr);
+			var process = exec(command, {maxBuffer: 1024 * 500}, function (error, stdout, stderr) {
+
+				if (!resolveError && error !== null){
+					reject(stderr);
+				}
 				else resolve({stdout:stdout, stderr:stderr});
 			});
 		}
