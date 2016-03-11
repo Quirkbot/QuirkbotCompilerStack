@@ -75,7 +75,7 @@ var compileResetFirmaware = function() {
 		pass()
 		.then(execute(precompileCommand))
 		.then(function(result){
-			console.log(result)
+			console.log(result.stdout)
 		})
 		.then(readFile(path.resolve('.tmp-build','firmware.ino.hex')))
 		.then(function (hex) {
