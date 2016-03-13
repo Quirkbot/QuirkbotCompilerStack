@@ -9,7 +9,7 @@
     "ncp": "2.0.0",
     "npm-arduino-avr-gcc": "4.8.1-arduino5",
     "npm-arduino-builder": "1.3.8",
-    "quirkbot-arduino-hardware": "0.4.0",
+    "quirkbot-arduino-hardware": "0.4.1",
     "quirkbot-arduino-library": "2.1.1",
     "request": "2.65.0",
     "rimraf": "2.4.4",
