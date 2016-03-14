@@ -57,6 +57,7 @@ var init = function () {
 				'-tools="' + path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools') + '" ' +
 				'-tools="' + path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
 				'-fqbn="quirkbot-arduino-hardware:avr:quirkbot" ' +
+				'-ide-version=10607 ' +
 				'-build-path="' + path.resolve(TMP) + '" ' +
 				'-verbose ' +
 				path.resolve(SKETCHES, 'firmware.ino');

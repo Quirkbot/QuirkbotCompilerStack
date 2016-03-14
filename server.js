@@ -82,7 +82,7 @@ var indexRequest = function(request, response){
 				'/clibrary-info': 'The content of the library.properties of the current Quirkbot library.'
 			},
 			{
-				'/hardware-info': 'The content of the version.txt of the current Quirkbot board definition.'
+				'/chardware-info': 'The content of the version.txt of the current Quirkbot board definition.'
 			}
 		]
 
