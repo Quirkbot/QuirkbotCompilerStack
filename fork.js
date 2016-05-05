@@ -183,7 +183,7 @@ var compile = function(sketch){
 				return;
 			}
 			// Max ram at 90%
-			if(ram > boardSettings['quirkbot.upload.maximum_data_size'] * 0.9){
+			if(ram > boardSettings['quirkbot.upload.maximum_data_size'] * 0.8){
 				throw 'RAM_MAX';
 				return;
 			}
@@ -195,7 +195,6 @@ var compile = function(sketch){
 			resolve(sketch)
 		})
 		.catch(function(error){
-			console.log('aaaaaaa', error)
 			sketch.error = error;
 			resolve(sketch)
 		})
