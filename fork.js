@@ -174,16 +174,16 @@ var compile = function(sketch){
 			var rom = processedSize[0] + processedSize[1];
 			var ram = processedSize[1] + processedSize[2];
 			var maxRom = boardSettings['quirkbot.upload.maximum_size'];
-			var maxRam = boardSettings['quirkbot.upload.maximum_data_size'];
+			var maxRam = Math.floor(boardSettings['quirkbot.upload.maximum_data_size'] * 0.8);
 
 			sketch.size = [ rom, maxRom, ram, maxRam ];
 
-			if(rom > boardSettings['quirkbot.upload.maximum_size']){
+			if(rom > maxRom){
 				throw 'ROM_MAX';
 				return;
 			}
 			// Max ram at 90%
-			if(ram > boardSettings['quirkbot.upload.maximum_data_size'] * 0.8){
+			if(ram > maxRam){
 				throw 'RAM_MAX';
 				return;
 			}
