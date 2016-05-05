@@ -171,7 +171,23 @@ var compile = function(sketch){
 			processedSize = processedSize.map(function(item) {
 				return Number(item.replace(/\s/g, ''));
 			});
-			sketch.size = [processedSize[0] + processedSize[1], processedSize[1] + processedSize[2]];
+			var rom = processedSize[0] + processedSize[1];
+			var ram = processedSize[1] + processedSize[2];
+			var maxRom = boardSettings['quirkbot.upload.maximum_size'];
+			var maxRam = boardSettings['quirkbot.upload.maximum_data_size'];
+
+			sketch.size = [ rom, maxRom, ram, maxRam ];
+
+			if(rom > boardSettings['quirkbot.upload.maximum_size']){
+				throw 'ROM_MAX';
+				return;
+			}
+			// Max ram at 90%
+			if(ram > boardSettings['quirkbot.upload.maximum_data_size'] * 0.9){
+				throw 'RAM_MAX';
+				return;
+			}
+
 		})
 		.then(readFile(path.resolve(TMP, 'firmware.ino.hex')))
 		.then(function(hex){
@@ -179,6 +195,7 @@ var compile = function(sketch){
 			resolve(sketch)
 		})
 		.catch(function(error){
+			console.log('aaaaaaa', error)
 			sketch.error = error;
 			resolve(sketch)
 		})

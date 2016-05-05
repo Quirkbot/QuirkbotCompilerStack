@@ -30,7 +30,7 @@ var ProgramSchema = new mongoose.Schema({
 		type: String
 	},
 	size: {
-		type: [String]
+		type: [Number]
 	},
 	error: {
 		type: String
