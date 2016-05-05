@@ -185,10 +185,16 @@ var resultRequest = function(request, response){
 	pass(sketch)
 	.then(getResult)
 	.then(function(sketch){
+		delete sketch.code;
+		delete sketch.createdAt;
+		delete sketch.__v;
 		response.writeHead(200, {'Content-Type': 'application/json'});
 		response.end(JSON.stringify(sketch));
 	})
 	.catch(function(sketch){
+		delete sketch.code;
+		delete sketch.createdAt;
+		delete sketch.__v;
 		response.writeHead(403, {'Content-Type': 'application/json'});
 		response.end(JSON.stringify(sketch));
 	})

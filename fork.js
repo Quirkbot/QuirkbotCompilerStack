@@ -25,7 +25,8 @@ var LABEL;
 */
 var TMP;
 var SKETCHES;
-var COMMAND;
+var COMPILE_COMMAND;
+var SIZE_COMMAND;
 
 /**
 * Initializes the temp directories and compile the base firmeware.
@@ -114,6 +115,7 @@ var run = function(id, code){
 				worker: LABEL,
 				id: sketch._id,
 				hex: sketch.hex,
+				size: sketch.size,
 				error: sketch.error
 			}
 		})
@@ -125,11 +127,13 @@ process.on('message', function(message) {
 		LABEL = message.data;
 		TMP = '.tmp-build' + LABEL;
 		SKETCHES = '.tmp-sketches' + LABEL;
-		COMMAND = path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
+		COMPILE_COMMAND = path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
 			'-build-options-file="' + path.resolve(TMP, 'build.options.json') + '" ' +
 			'-build-path="' + path.resolve(TMP) + '" ' +
 			'-verbose ' +
-			path.resolve(SKETCHES, 'firmware.ino') ;
+			path.resolve(SKETCHES, 'firmware.ino');
+		SIZE_COMMAND = path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + ' ' +
+			path.resolve(TMP, 'firmware.ino.elf');
 		init();
 	}
 	else if(message.type == 'run'){
@@ -141,7 +145,34 @@ var compile = function(sketch){
 	var promise = function(resolve, reject){
 		pass(sketch)
 		.then(writeFile(path.resolve(SKETCHES, 'firmware.ino'), sketch.code)())
-		.then(execute(COMMAND))
+		.then(execute(COMPILE_COMMAND))
+		.then(execute(SIZE_COMMAND))
+		.then(function(size) {
+			if(size.stderr){
+				throw new Error(size.stderr);
+				return;
+			}
+			// The size result will be on the format like the example below:
+			// text		data	bss	    dec	    	hex
+  			// 14442	146	    586		15174	   3b46
+			//
+			// We want to return ROM (text + data) and RAM (data + bss)
+			var processedSize = size.stdout.split('\n');
+			if(processedSize.length < 2){
+				throw new Error('Invalid size string: ' + size.stdout);
+				return;
+			}
+			processedSize = processedSize[1].split('\t');
+			if(processedSize.length < 5){
+				throw new Error('Invalid size string: ' + size.stdout);
+				return;
+			}
+			processedSize = processedSize.slice(0,3);
+			processedSize = processedSize.map(function(item) {
+				return Number(item.replace(/\s/g, ''));
+			});
+			sketch.size = [processedSize[0] + processedSize[1], processedSize[1] + processedSize[2]];
+		})
 		.then(readFile(path.resolve(TMP, 'firmware.ino.hex')))
 		.then(function(hex){
 			sketch.hex = hex;
