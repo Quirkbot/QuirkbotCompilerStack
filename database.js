@@ -30,7 +30,7 @@ var ProgramSchema = new mongoose.Schema({
 		type: String
 	},
 	size: {
-		type: [String]
+		type: [Number]
 	},
 	error: {
 		type: String
@@ -89,6 +89,10 @@ exports.getNext = function(){
 }
 exports.setReady = function(id, hex, error, size){
 	var promise = function(resolve, reject){
+		error = error || '';
+		hex = hex || '';
+		size = size || [];
+
 		ProgramModel.findByIdAndUpdate(
 			id,
 			{
