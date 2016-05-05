@@ -29,6 +29,9 @@ var ProgramSchema = new mongoose.Schema({
 	hex: {
 		type: String
 	},
+	size: {
+		type: [String]
+	},
 	error: {
 		type: String
 	},
@@ -84,13 +87,14 @@ exports.getNext = function(){
 	}
 	return new Promise(promise);
 }
-exports.setReady = function(id, hex, error){
+exports.setReady = function(id, hex, error, size){
 	var promise = function(resolve, reject){
 		ProgramModel.findByIdAndUpdate(
 			id,
 			{
 				ready: true,
 				hex: hex,
+				size: size,
 				error: error
 			},
 			function (error, instance) {}
@@ -105,7 +109,7 @@ exports.extract = function(id){
 			id,
 			function (error, instance) {
 				if(!error && instance){
-					resolve(instance);
+					resolve(instance.toObject());
 				}
 				else reject('Cannot extract '+id, error)
 			}

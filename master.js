@@ -113,7 +113,7 @@ var prepareCluster = function(){
 
 			fork.worker.on('message', function(message) {
 				if(message.type === 'success'){
-					database.setReady(message.data.id, message.data.hex, message.data.error);
+					database.setReady(message.data.id, message.data.hex, message.data.error, message.data.size);
 
 					//console.log('ask', message.data.worker)
 					var fork = forks[message.data.worker];
