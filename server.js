@@ -51,8 +51,16 @@ var start = function () {
 	server.listen(port);
 	console.log('Serving on port '+port);
 }
-
-
+throng({
+	workers: process.env.WEB_CONCURRENCY || require('os').cpus().length,
+	lifetime: Infinity,
+	master: start
+});
+throng({
+	workers: 4,
+	master: startMaster,
+	start: startWorker
+});
 
 /**
  * Index
@@ -254,12 +262,8 @@ var cleanOldEntries = function(){
 	})
 }
 
+var cluster = require('cluster');
+if (cluster.isMaster){
+	setTimeout(cleanOldEntries,0);
+}
 
-
-
-throng({
-	workers: process.env.WEB_CONCURRENCY || require('os').cpus().length,
-	lifetime: Infinity,
-	start: start,
-	master: cleanOldEntries
-});
