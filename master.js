@@ -156,20 +156,41 @@ var prepareCluster = function(){
 			})
 		}
 		var pushJobs = function(){
-			database.countPending()
-			.then(function(count){
-				if(!count) return;
-				var pushes = 0;
-				forks.forEach(function(fork){
-					if(pushes >= count) return;
-					if(!fork.free) return;
-					pushes++;
-					//console.log('push', fork.label)
-					doJob(fork)
-				})
+			console.log('*')
+			var freeForks = forks.filter(function(fork){
+				return fork.free;
 			})
+			if(freeForks.length){
+				database.countPending()
+				.then(function(count){
+					if(count){
+						var pushes = 0;
+						forks.forEach(function(fork){
+							if(pushes >= count) return;
+							if(!fork.free) return;
+							pushes++;
+							console.log('push', fork.label)
+							doJob(fork)
+						})
+						console.log('- job!')
+						setTimeout(pushJobs, 300);
+					}
+					else{
+						console.log('- empty')
+						setTimeout(pushJobs, 2000);
+					}
+				})
+				.catch(function(error) {
+					console.log('- error')
+					setTimeout(pushJobs, 2000);
+				})
+			}
+			else{
+				console.log('- busy')
+				setTimeout(pushJobs, 300);
+			}
 
-			setTimeout(pushJobs, 100);
+
 		}
 		cluster.on('exit', function(worker, code, signal) {
 			var delay = 5000;

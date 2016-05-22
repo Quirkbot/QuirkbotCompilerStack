@@ -241,17 +241,17 @@ var configRequest = function(request, response){
 /**
  * Recursive Database cleanup routine
  *
- * Every 10 seconds request the database to delete entries that are created more
- * that 15 seconds ago. This means that if a program's hex is not requested
- * within 15 seconds, it will be discarted.
+ * Every 40 seconds request the database to delete entries that are created more
+ * that 30 seconds ago. This means that if a program's hex is not requested
+ * within 30 seconds, it will be discarted.
  **/
 var cleanOldEntries = function(){
-	database.clearOld(15000)
-	.then(delay(10000))
+	database.clearOld(30000)
+	.then(delay(40000))
 	.then(cleanOldEntries)
 	.catch(function(){
 		pass()
-		.then(delay(10000))
+		.then(delay(40000))
 		.then(cleanOldEntries)
 	})
 }

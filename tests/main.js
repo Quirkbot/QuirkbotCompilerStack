@@ -1,6 +1,8 @@
 //var SERVER = "https://quirkbot-compiler.herokuapp.com";
 var SERVER = "http://localhost:8080";
 
+//var SERVER = "http://quirkbot-compiler-web-stage.us-east-1.elasticbeanstalk.com"
+
 var _request = function(url){
 	return function(){
 		var payload = arguments;
