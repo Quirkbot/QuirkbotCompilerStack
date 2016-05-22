@@ -51,12 +51,7 @@ var start = function () {
 	server.listen(port);
 	console.log('Serving on port '+port);
 }
-throng({
-	workers: process.env.WEB_CONCURRENCY || require('os').cpus().length,
-	lifetime: Infinity,
-	start: start,
-	master: cleanOldEntries
-});
+
 
 
 /**
@@ -258,3 +253,13 @@ var cleanOldEntries = function(){
 		.then(cleanOldEntries)
 	})
 }
+
+
+
+
+throng({
+	workers: process.env.WEB_CONCURRENCY || require('os').cpus().length,
+	lifetime: Infinity,
+	start: start,
+	master: cleanOldEntries
+});
