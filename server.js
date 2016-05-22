@@ -56,12 +56,6 @@ throng({
 	lifetime: Infinity,
 	master: start
 });
-throng({
-	workers: 4,
-	master: startMaster,
-	start: startWorker
-});
-
 /**
  * Index
  *
