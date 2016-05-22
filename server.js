@@ -51,10 +51,9 @@ var start = function () {
 	server.listen(port);
 	console.log('Serving on port '+port);
 }
-throng({
+throng(start, {
 	workers: process.env.WEB_CONCURRENCY || require('os').cpus().length,
-	lifetime: Infinity,
-	master: start
+	lifetime: Infinity
 });
 /**
  * Index
