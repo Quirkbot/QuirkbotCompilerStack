@@ -55,7 +55,7 @@ var init = function () {
 			.catch(reject);
 		});
 	}
-	var compileResetFirmaware = function() {
+	var compileResetFirmware = function() {
 		return new Promise(function(resolve){
 			var precompileCommand =
 				path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
@@ -82,7 +82,7 @@ var init = function () {
 
 	pass()
 	.then(cleanUp)
-	.then(compileResetFirmaware)
+	.then(compileResetFirmware)
 	.then(function(){
 		process.send({
 			type: 'init',
