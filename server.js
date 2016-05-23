@@ -1,4 +1,11 @@
 "use strict";
+if(
+	process.env.NEW_RELIC_APP_NAME
+	&& process.env.NEW_RELIC_KEY
+	&& process.env.NEW_RELIC_LEVEL
+) {
+	var newrelic = require( 'newrelic' );
+}
 
 var throng = require('throng');
 var utils = require('./utils');
@@ -8,7 +15,6 @@ var delay = utils.delay;
 
 var http = require('http');
 var database = require('./database');
-
 
 
 /**
