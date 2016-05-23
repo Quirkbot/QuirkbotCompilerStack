@@ -24,7 +24,9 @@ var LABEL;
 * Const
 */
 var TMP;
+var BUILD;
 var SKETCHES;
+var TOOLS;
 var COMPILE_COMMAND;
 var SIZE_COMMAND;
 
@@ -40,10 +42,15 @@ var init = function () {
 		return new Promise(function(resolve, reject){
 			pass()
 			.then(deleteDir(path.resolve(TMP)))
-			.then(deleteDir(path.resolve(SKETCHES)))
 			.then(mkdir(path.resolve(TMP)))
+			.then(mkdir(path.resolve(BUILD)))
+			.then(mkdir(path.resolve(TOOLS)))
 			.then(mkdir(path.resolve(SKETCHES)))
 			.then(copyDir(path.resolve('firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
+			.then(copyDir(path.resolve('node_modules', 'npm-arduino-builder'), path.resolve(TOOLS, 'npm-arduino-builder')))
+			.then(copyDir(path.resolve('node_modules', 'npm-arduino-avr-gcc'), path.resolve(TOOLS, 'npm-arduino-avr-gcc')))
+			.then(copyDir(path.resolve('node_modules', 'quirkbot-arduino-hardware'), path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
+			.then(copyDir(path.resolve('node_modules', 'quirkbot-arduino-library'), path.resolve(TOOLS, 'quirkbot-arduino-library')))
 			.then(resolve)
 			.catch(reject);
 		});
@@ -51,15 +58,15 @@ var init = function () {
 	var compileResetFirmaware = function() {
 		return new Promise(function(resolve){
 			var precompileCommand =
-				path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
-				'-hardware="' + path.resolve('node_modules') + '" ' +
-				'-hardware="' + path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
-				'-libraries="' + path.resolve('node_modules') + '" ' +
-				'-tools="' + path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools') + '" ' +
-				'-tools="' + path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
+				path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
+				'-hardware="' + path.resolve(TOOLS) + '" ' +
+				'-hardware="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
+				'-libraries="' + path.resolve(TOOLS) + '" ' +
+				'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" ' +
+				'-tools="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
 				'-fqbn="quirkbot-arduino-hardware:avr:quirkbot" ' +
 				'-ide-version=10607 ' +
-				'-build-path="' + path.resolve(TMP) + '" ' +
+				'-build-path="' + path.resolve(BUILD) + '" ' +
 				'-verbose ' +
 				path.resolve(SKETCHES, 'firmware.ino');
 
@@ -125,15 +132,17 @@ process.on('message', function(message) {
 	if(message.type == 'label'){
 		console.log('Fork created: ' +  message.data);
 		LABEL = message.data;
-		TMP = '.tmp-build' + LABEL;
-		SKETCHES = '.tmp-sketches' + LABEL;
-		COMPILE_COMMAND = path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
-			'-build-options-file="' + path.resolve(TMP, 'build.options.json') + '" ' +
-			'-build-path="' + path.resolve(TMP) + '" ' +
+		TMP = '.tmp-' + LABEL;
+		BUILD = path.join(TMP, 'build');
+		SKETCHES = path.join(TMP, 'sketches');
+		TOOLS = path.join(TMP, 'tools');
+		COMPILE_COMMAND = path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
+			'-build-options-file="' + path.resolve(BUILD, 'build.options.json') + '" ' +
+			'-build-path="' + path.resolve(BUILD) + '" ' +
 			'-verbose ' +
 			path.resolve(SKETCHES, 'firmware.ino');
-		SIZE_COMMAND = path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + ' ' +
-			path.resolve(TMP, 'firmware.ino.elf');
+		SIZE_COMMAND = path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + ' ' +
+			path.resolve(BUILD, 'firmware.ino.elf');
 		init();
 	}
 	else if(message.type == 'run'){
@@ -189,7 +198,7 @@ var compile = function(sketch){
 			}
 
 		})
-		.then(readFile(path.resolve(TMP, 'firmware.ino.hex')))
+		.then(readFile(path.resolve(BUILD, 'firmware.ino.hex')))
 		.then(function(hex){
 			sketch.hex = hex;
 			resolve(sketch)
