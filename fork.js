@@ -28,6 +28,7 @@ var BUILD;
 var SKETCHES;
 var TOOLS;
 var COMPILE_COMMAND;
+var FAST_COMPILE_COMMAND;
 var SIZE_COMMAND;
 
 /**
@@ -55,6 +56,7 @@ var init = function () {
 			.catch(reject);
 		});
 	}
+
 	var compileResetFirmware = function() {
 		return new Promise(function(resolve){
 			var precompileCommand =
@@ -80,9 +82,76 @@ var init = function () {
 		});
 	}
 
+	var prepareFastCompilation = function() {
+		return new Promise(function(resolve){
+
+			pass()
+			.then(execute(COMPILE_COMMAND))
+			.then(function(result){
+				var compile = result.stdout
+					.split(/\r?\n/)
+					.filter(function(line) {
+						return line.indexOf('firmware.ino.cpp.o') !== -1
+					})
+					.slice(0,1);
+
+				var _open;
+				var linkAndCopy = result.stdout
+					.split(/\r?\n/)
+					.filter(function(line) {
+						if(!_open){
+							if(line.indexOf('firmware.ino.elf') !== -1){
+								_open = true;
+								return true;
+							}
+						}
+						if(_open){
+							if(line.indexOf('firmware.ino.hex') !== -1){
+								_open = false;
+								return true;
+							}
+						}
+					})
+
+				var build = compile.concat(linkAndCopy);
+
+				FAST_COMPILE_COMMAND = build.join(' && ')
+
+				console.log(FAST_COMPILE_COMMAND);
+			})
+			.then(resolve)
+			.catch(function (error) {
+				console.log('Error preparing fast compilation.', error);
+				reject(error)
+			});
+		});
+	}
+
+	/*var precompileQuirkbotHeader = function(resetFirmwareCompilationResult) {
+		var precompiledHeaderCommand;
+		var quirkbotLine = resetFirmwareCompilationResult.stdout
+			.split(/\r?\n/)
+			.filter(function(line) {
+				return line.indexOf('Quirkbot.cpp.o') !== -1
+			})
+			.slice(0,1)[0];
+		if(quirkbotLine){
+			var sourceArray = quirkbotLine.split('-o ');
+			if(sourceArray.length === 2){
+				sourceArray[0] = sourceArray[0].replace('Quirkbot.cpp', 'Quirkbot.h')
+				sourceArray[1] = path.resolve(TOOLS, 'quirkbot-arduino-library', 'src', 'Quirkbot.h.gch')
+				precompiledHeaderCommand = sourceArray.join('-o ')
+			}
+
+		}
+		console.log(precompiledHeaderCommand)
+	}*/
+
 	pass()
 	.then(cleanUp)
 	.then(compileResetFirmware)
+	.then(prepareFastCompilation)
+
 	.then(function(){
 		process.send({
 			type: 'init',
@@ -153,9 +222,15 @@ process.on('message', function(message) {
 var compile = function(sketch){
 	var promise = function(resolve, reject){
 		pass(sketch)
-		.then(writeFile(path.resolve(SKETCHES, 'firmware.ino'), sketch.code)())
-		.then(execute(COMPILE_COMMAND))
+		//.then(deleteDir(path.resolve(BUILD, 'sketch')))
+		//.then(mkdir(path.resolve(BUILD, 'sketch')))
+		.then(writeFile(path.resolve(BUILD, 'sketch', 'firmware.ino.cpp'), sketch.code))
+		.then(execute(FAST_COMPILE_COMMAND))
 		.then(execute(SIZE_COMMAND))
+
+		//.then(writeFile(path.resolve(SKETCHES, 'firmware.ino'), sketch.code)())
+		//.then(execute(COMPILE_COMMAND))
+		//.then(execute(SIZE_COMMAND))
 		.then(function(size) {
 			if(size.stderr){
 				throw new Error(size.stderr);
