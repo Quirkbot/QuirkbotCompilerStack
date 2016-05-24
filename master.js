@@ -115,7 +115,7 @@ var prepareCluster = function(){
 				if(message.type === 'success'){
 					database.setReady(message.data.id, message.data.hex, message.data.error, message.data.size);
 
-					//console.log('ask', message.data.worker)
+					console.log('ask', message.data.worker)
 					var fork = forks[message.data.worker];
 					if(!fork.worker.isDead()){
 						fork.free = true;
@@ -156,7 +156,7 @@ var prepareCluster = function(){
 			})
 		}
 		var pushJobs = function(){
-			console.log('*')
+			//console.log('*')
 			var freeForks = forks.filter(function(fork){
 				return fork.free;
 			})
@@ -172,21 +172,21 @@ var prepareCluster = function(){
 							console.log('push', fork.label)
 							doJob(fork)
 						})
-						console.log('- job!')
+						//console.log('- job!')
 						setTimeout(pushJobs, 300);
 					}
 					else{
-						console.log('- empty')
+						//console.log('- empty')
 						setTimeout(pushJobs, 2000);
 					}
 				})
 				.catch(function(error) {
-					console.log('- error')
+					//console.log('- error')
 					setTimeout(pushJobs, 2000);
 				})
 			}
 			else{
-				console.log('- busy')
+				//console.log('- busy')
 				setTimeout(pushJobs, 300);
 			}
 
