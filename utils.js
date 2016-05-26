@@ -249,7 +249,7 @@ var timeReportStart = function(){
 }
 exports.timeReportStart = timeReportStart;
 var timeReportEnd = function(key, label){
-	console.log('Time Report', label, Date.now() - _timeReportHash[key]);
+	//console.log('Time Report', label, Date.now() - _timeReportHash[key]);
 	delete _timeReportHash[key];
 }
 exports.timeReportEnd = timeReportEnd;

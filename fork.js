@@ -32,6 +32,37 @@ var FAST_COMPILE_COMMAND;
 var SIZE_COMMAND;
 
 /**
+* Interface with master process
+*/
+process.on('message', function(message) {
+	if(message.type == 'label'){
+		setup(message.data);
+	}
+	else if(message.type == 'run'){
+		run(message.data.id,message.data.code);
+	}
+});
+/**
+* Setup the fork
+*/
+var setup = function(label) {
+	console.log('Fork created: ' +  label);
+	LABEL = label;
+	TMP = '.tmp-' + LABEL;
+	BUILD = path.join(TMP, 'build');
+	SKETCHES = path.join(TMP, 'sketches');
+	TOOLS = path.join(TMP, 'tools');
+	COMPILE_COMMAND = path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
+		'-build-options-file="' + path.resolve(BUILD, 'build.options.json') + '" ' +
+		'-build-path="' + path.resolve(BUILD) + '" ' +
+		'-verbose ' +
+		path.resolve(SKETCHES, 'firmware.ino');
+	SIZE_COMMAND = path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + ' ' +
+		path.resolve(BUILD, 'firmware.ino.elf');
+	init();
+}
+module.exports.setup = setup;
+/**
 * Initializes the temp directories and compile the base firmeware.
 * When it's complete, send a 'init' message so the master process can start
 * requesting compilations.
@@ -39,7 +70,7 @@ var SIZE_COMMAND;
 var init = function () {
 	if(typeof LABEL === 'undefined') return;
 
-	var cleanUp = function() {
+	var precleanUp = function() {
 		return new Promise(function(resolve, reject){
 			pass()
 			.then(deleteDir(path.resolve(TMP)))
@@ -116,8 +147,12 @@ var init = function () {
 				var build = compile.concat(linkAndCopy);
 
 				FAST_COMPILE_COMMAND = build.join(' && ')
-
 				console.log(FAST_COMPILE_COMMAND);
+
+				// Save the command to disk so it can be used by the microcore compiler
+				return pass()
+				.then(writeFile(path.resolve(BUILD, 'fast_compile.sh'), FAST_COMPILE_COMMAND));
+
 			})
 			.then(resolve)
 			.catch(function (error) {
@@ -127,30 +162,25 @@ var init = function () {
 		});
 	}
 
-	/*var precompileQuirkbotHeader = function(resetFirmwareCompilationResult) {
-		var precompiledHeaderCommand;
-		var quirkbotLine = resetFirmwareCompilationResult.stdout
-			.split(/\r?\n/)
-			.filter(function(line) {
-				return line.indexOf('Quirkbot.cpp.o') !== -1
-			})
-			.slice(0,1)[0];
-		if(quirkbotLine){
-			var sourceArray = quirkbotLine.split('-o ');
-			if(sourceArray.length === 2){
-				sourceArray[0] = sourceArray[0].replace('Quirkbot.cpp', 'Quirkbot.h')
-				sourceArray[1] = path.resolve(TOOLS, 'quirkbot-arduino-library', 'src', 'Quirkbot.h.gch')
-				precompiledHeaderCommand = sourceArray.join('-o ')
-			}
-
-		}
-		console.log(precompiledHeaderCommand)
-	}*/
+	var postleanUp = function() {
+		return new Promise(function(resolve, reject){
+			pass()
+			.then(deleteDir(path.resolve(SKETCHES)))
+			.then(deleteDir(path.resolve(TOOLS, 'npm-arduino-builder')))
+			//.then(deleteDir(path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
+			//.then(deleteDir(path.resolve(TOOLS, 'quirkbot-arduino-library')))
+			.then(deleteDir(path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'node_modules')))
+			//.then(deleteDir(path.resolve(BUILD, 'quirkbot-arduino-library')))
+			.then(resolve)
+			.catch(reject);
+		});
+	}
 
 	pass()
-	.then(cleanUp)
+	.then(precleanUp)
 	.then(compileResetFirmware)
 	.then(prepareFastCompilation)
+	.then(postleanUp)
 
 	.then(function(){
 		process.send({
@@ -166,6 +196,7 @@ var init = function () {
 
 
 }
+module.exports.init = init;
 /**
 * This is the entrypoint of a compilation
 */
@@ -197,27 +228,7 @@ var run = function(id, code){
 		})
 	});
 }
-process.on('message', function(message) {
-	if(message.type == 'label'){
-		console.log('Fork created: ' +  message.data);
-		LABEL = message.data;
-		TMP = '.tmp-' + LABEL;
-		BUILD = path.join(TMP, 'build');
-		SKETCHES = path.join(TMP, 'sketches');
-		TOOLS = path.join(TMP, 'tools');
-		COMPILE_COMMAND = path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
-			'-build-options-file="' + path.resolve(BUILD, 'build.options.json') + '" ' +
-			'-build-path="' + path.resolve(BUILD) + '" ' +
-			'-verbose ' +
-			path.resolve(SKETCHES, 'firmware.ino');
-		SIZE_COMMAND = path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + ' ' +
-			path.resolve(BUILD, 'firmware.ino.elf');
-		init();
-	}
-	else if(message.type == 'run'){
-		run(message.data.id,message.data.code);
-	}
-});
+module.exports.run = run;
 // Level0 ----------------------------------------------------------------------
 var compile = function(sketch){
 	var promise = function(resolve, reject){
@@ -285,3 +296,4 @@ var compile = function(sketch){
 	};
 	return new Promise(promise);
 };
+module.exports.run = run;
