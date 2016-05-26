@@ -241,6 +241,11 @@ var delay = function(millis){
 }
 exports.delay = delay;
 
+var modulePath = function(module){
+	return path.resolve(require.resolve(path.join(module, 'package.json')), '..');
+}
+exports.modulePath = modulePath;
+
 var _timeReportHash = {};
 var timeReportStart = function(){
 	var key = (Math.random() * 99999999999999999999).toFixed(0);
