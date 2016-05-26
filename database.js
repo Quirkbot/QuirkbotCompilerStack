@@ -1,5 +1,6 @@
 "use strict";
 
+var utils = require('./utils');
 var mongoose = require('mongoose');
 var mongooseUrl = process.env.MONGO_URL || 'mongodb://localhost:27017/quirkbot-compiler'
 
@@ -49,6 +50,8 @@ var ProgramModel = mongoose.model('ProgramModel', ProgramSchema);
 
 
 exports.create = function(code){
+	var report = utils.timeReportStart();
+
 	var promise = function(resolve, reject){
 		var instance = new ProgramModel({
 			code: code
@@ -56,13 +59,16 @@ exports.create = function(code){
 		instance.save(function(error){
 			if(error) console.log(error)
 		});
+		utils.timeReportEnd(report, 'db create');
 		resolve(instance.id);
 	}
 	return new Promise(promise);
 }
 exports.countPending = function(){
+	var report = utils.timeReportStart();
 	var promise = function(resolve, reject){
 		ProgramModel.count({ pending: true, ready: false }, function (error, count) {
+			utils.timeReportEnd(report, 'db countPending');
 			if(error) resolve(0);
 			else resolve(count)
 		});
@@ -70,6 +76,7 @@ exports.countPending = function(){
 	return new Promise(promise);
 }
 exports.getNext = function(){
+	var report = utils.timeReportStart();
 	var promise = function(resolve, reject){
 		ProgramModel.findOneAndUpdate(
 			{pending: true},
@@ -78,6 +85,7 @@ exports.getNext = function(){
 				sort:{createdAt: 1}
 			},
 			function (error, instance) {
+				utils.timeReportEnd(report, 'db getNext');
 				if(!error && instance){
 					resolve(instance);
 				}
@@ -108,10 +116,12 @@ exports.setReady = function(id, hex, error, size){
 	return new Promise(promise);
 }
 exports.extract = function(id){
+	var report = utils.timeReportStart();
 	var promise = function(resolve, reject){
 		ProgramModel.findById(
 			id,
 			function (error, instance) {
+				utils.timeReportEnd(report, 'db extract');
 				if(!error && instance){
 					resolve(instance.toObject());
 				}
@@ -122,10 +132,12 @@ exports.extract = function(id){
 	return new Promise(promise);
 }
 exports.clearOld = function(interval){
+	var report = utils.timeReportStart();
 	interval = interval || 300000;
 	var promise = function(resolve, reject){
 		ProgramModel.where('createdAt').lte(Date.now() - interval)
 		.remove(function(error){
+			utils.timeReportEnd(report, 'db clearOld');
 			if(error) reject(error);
 			else resolve();
 		})

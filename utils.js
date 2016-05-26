@@ -240,3 +240,17 @@ var delay = function(millis){
 	}
 }
 exports.delay = delay;
+
+var _timeReportHash = {};
+var timeReportStart = function(){
+	var key = (Math.random() * 99999999999999999999).toFixed(0);
+	_timeReportHash[key] = Date.now();
+	return key;
+}
+exports.timeReportStart = timeReportStart;
+var timeReportEnd = function(key, label){
+	//console.log('Time Report', label, Date.now() - _timeReportHash[key]);
+	delete _timeReportHash[key];
+}
+exports.timeReportEnd = timeReportEnd;
+

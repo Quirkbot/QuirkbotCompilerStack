@@ -24,10 +24,44 @@ var LABEL;
 * Const
 */
 var TMP;
+var BUILD;
 var SKETCHES;
+var TOOLS;
 var COMPILE_COMMAND;
+var FAST_COMPILE_COMMAND;
 var SIZE_COMMAND;
 
+/**
+* Interface with master process
+*/
+process.on('message', function(message) {
+	if(message.type == 'label'){
+		setup(message.data);
+	}
+	else if(message.type == 'run'){
+		run(message.data.id,message.data.code);
+	}
+});
+/**
+* Setup the fork
+*/
+var setup = function(label) {
+	console.log('Fork created: ' +  label);
+	LABEL = label;
+	TMP = '.tmp-' + LABEL;
+	BUILD = path.join(TMP, 'build');
+	SKETCHES = path.join(TMP, 'sketches');
+	TOOLS = path.join(TMP, 'tools');
+	COMPILE_COMMAND = path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
+		'-build-options-file="' + path.resolve(BUILD, 'build.options.json') + '" ' +
+		'-build-path="' + path.resolve(BUILD) + '" ' +
+		'-verbose ' +
+		path.resolve(SKETCHES, 'firmware.ino');
+	SIZE_COMMAND = path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + ' ' +
+		path.resolve(BUILD, 'firmware.ino.elf');
+	init();
+}
+module.exports.setup = setup;
 /**
 * Initializes the temp directories and compile the base firmeware.
 * When it's complete, send a 'init' message so the master process can start
@@ -36,30 +70,36 @@ var SIZE_COMMAND;
 var init = function () {
 	if(typeof LABEL === 'undefined') return;
 
-	var cleanUp = function() {
+	var precleanUp = function() {
 		return new Promise(function(resolve, reject){
 			pass()
 			.then(deleteDir(path.resolve(TMP)))
-			.then(deleteDir(path.resolve(SKETCHES)))
 			.then(mkdir(path.resolve(TMP)))
+			.then(mkdir(path.resolve(BUILD)))
+			.then(mkdir(path.resolve(TOOLS)))
 			.then(mkdir(path.resolve(SKETCHES)))
 			.then(copyDir(path.resolve('firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
+			.then(copyDir(path.resolve('node_modules', 'npm-arduino-builder'), path.resolve(TOOLS, 'npm-arduino-builder')))
+			.then(copyDir(path.resolve('node_modules', 'npm-arduino-avr-gcc'), path.resolve(TOOLS, 'npm-arduino-avr-gcc')))
+			.then(copyDir(path.resolve('node_modules', 'quirkbot-arduino-hardware'), path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
+			.then(copyDir(path.resolve('node_modules', 'quirkbot-arduino-library'), path.resolve(TOOLS, 'quirkbot-arduino-library')))
 			.then(resolve)
 			.catch(reject);
 		});
 	}
-	var compileResetFirmaware = function() {
+
+	var compileResetFirmware = function() {
 		return new Promise(function(resolve){
 			var precompileCommand =
-				path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
-				'-hardware="' + path.resolve('node_modules') + '" ' +
-				'-hardware="' + path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
-				'-libraries="' + path.resolve('node_modules') + '" ' +
-				'-tools="' + path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools') + '" ' +
-				'-tools="' + path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
+				path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
+				'-hardware="' + path.resolve(TOOLS) + '" ' +
+				'-hardware="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
+				'-libraries="' + path.resolve(TOOLS) + '" ' +
+				'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" ' +
+				'-tools="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
 				'-fqbn="quirkbot-arduino-hardware:avr:quirkbot" ' +
 				'-ide-version=10607 ' +
-				'-build-path="' + path.resolve(TMP) + '" ' +
+				'-build-path="' + path.resolve(BUILD) + '" ' +
 				'-verbose ' +
 				path.resolve(SKETCHES, 'firmware.ino');
 
@@ -73,9 +113,75 @@ var init = function () {
 		});
 	}
 
+	var prepareFastCompilation = function() {
+		return new Promise(function(resolve){
+
+			pass()
+			.then(execute(COMPILE_COMMAND))
+			.then(function(result){
+				var compile = result.stdout
+					.split(/\r?\n/)
+					.filter(function(line) {
+						return line.indexOf('firmware.ino.cpp.o') !== -1
+					})
+					.slice(0,1);
+
+				var _open;
+				var linkAndCopy = result.stdout
+					.split(/\r?\n/)
+					.filter(function(line) {
+						if(!_open){
+							if(line.indexOf('firmware.ino.elf') !== -1){
+								_open = true;
+								return true;
+							}
+						}
+						if(_open){
+							if(line.indexOf('firmware.ino.hex') !== -1){
+								_open = false;
+								return true;
+							}
+						}
+					})
+
+				var build = compile.concat(linkAndCopy);
+
+				FAST_COMPILE_COMMAND = build.join(' && ')
+				console.log(FAST_COMPILE_COMMAND);
+
+				// Save the command to disk so it can be used by the microcore compiler
+				return pass()
+				.then(writeFile(path.resolve(BUILD, 'fast_compile.sh'), FAST_COMPILE_COMMAND));
+
+			})
+			.then(resolve)
+			.catch(function (error) {
+				console.log('Error preparing fast compilation.', error);
+				reject(error)
+			});
+		});
+	}
+
+	var postleanUp = function() {
+		return new Promise(function(resolve, reject){
+			pass()
+			.then(deleteDir(path.resolve(SKETCHES)))
+			.then(deleteDir(path.resolve(TOOLS, 'npm-arduino-builder')))
+			//.then(deleteDir(path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
+			//.then(deleteDir(path.resolve(TOOLS, 'quirkbot-arduino-library')))
+			.then(deleteDir(path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'node_modules')))
+			//.then(deleteDir(path.resolve(BUILD, 'quirkbot-arduino-library')))
+			.then(resolve)
+			.catch(reject);
+		});
+	}
+
 	pass()
-	.then(cleanUp)
-	.then(compileResetFirmaware)
+	.then(precleanUp)
+	.then(compileResetFirmware)
+	.then(prepareFastCompilation)
+	.then(postleanUp)
+
 	.then(function(){
 		process.send({
 			type: 'init',
@@ -90,6 +196,7 @@ var init = function () {
 
 
 }
+module.exports.init = init;
 /**
 * This is the entrypoint of a compilation
 */
@@ -121,32 +228,20 @@ var run = function(id, code){
 		})
 	});
 }
-process.on('message', function(message) {
-	if(message.type == 'label'){
-		console.log('Fork created: ' +  message.data);
-		LABEL = message.data;
-		TMP = '.tmp-build' + LABEL;
-		SKETCHES = '.tmp-sketches' + LABEL;
-		COMPILE_COMMAND = path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
-			'-build-options-file="' + path.resolve(TMP, 'build.options.json') + '" ' +
-			'-build-path="' + path.resolve(TMP) + '" ' +
-			'-verbose ' +
-			path.resolve(SKETCHES, 'firmware.ino');
-		SIZE_COMMAND = path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + ' ' +
-			path.resolve(TMP, 'firmware.ino.elf');
-		init();
-	}
-	else if(message.type == 'run'){
-		run(message.data.id,message.data.code);
-	}
-});
+module.exports.run = run;
 // Level0 ----------------------------------------------------------------------
 var compile = function(sketch){
 	var promise = function(resolve, reject){
 		pass(sketch)
-		.then(writeFile(path.resolve(SKETCHES, 'firmware.ino'), sketch.code)())
-		.then(execute(COMPILE_COMMAND))
+		//.then(deleteDir(path.resolve(BUILD, 'sketch')))
+		//.then(mkdir(path.resolve(BUILD, 'sketch')))
+		.then(writeFile(path.resolve(BUILD, 'sketch', 'firmware.ino.cpp'), sketch.code))
+		.then(execute(FAST_COMPILE_COMMAND))
 		.then(execute(SIZE_COMMAND))
+
+		//.then(writeFile(path.resolve(SKETCHES, 'firmware.ino'), sketch.code)())
+		//.then(execute(COMPILE_COMMAND))
+		//.then(execute(SIZE_COMMAND))
 		.then(function(size) {
 			if(size.stderr){
 				throw new Error(size.stderr);
@@ -189,7 +284,7 @@ var compile = function(sketch){
 			}
 
 		})
-		.then(readFile(path.resolve(TMP, 'firmware.ino.hex')))
+		.then(readFile(path.resolve(BUILD, 'firmware.ino.hex')))
 		.then(function(hex){
 			sketch.hex = hex;
 			resolve(sketch)
@@ -201,3 +296,4 @@ var compile = function(sketch){
 	};
 	return new Promise(promise);
 };
+module.exports.run = run;

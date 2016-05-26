@@ -1,4 +1,11 @@
 "use strict";
+if(
+	process.env.NEW_RELIC_APP_NAME
+	&& process.env.NEW_RELIC_KEY
+	&& process.env.NEW_RELIC_LEVEL
+) {
+	var newrelic = require( 'newrelic' );
+}
 
 var throng = require('throng');
 var utils = require('./utils');
@@ -8,7 +15,6 @@ var delay = utils.delay;
 
 var http = require('http');
 var database = require('./database');
-
 
 
 /**
@@ -52,10 +58,9 @@ var start = function () {
 	console.log('Serving on port '+port);
 }
 throng(start, {
-  workers: process.env.WEB_CONCURRENCY || require('os').cpus().length,
-  lifetime: Infinity
+	workers: process.env.WEB_CONCURRENCY || require('os').cpus().length,
+	lifetime: Infinity
 });
-
 /**
  * Index
  *
@@ -241,18 +246,23 @@ var configRequest = function(request, response){
 /**
  * Recursive Database cleanup routine
  *
- * Every 10 seconds request the database to delete entries that are created more
- * that 15 seconds ago. This means that if a program's hex is not requested
- * within 15 seconds, it will be discarted.
+ * Every 40 seconds request the database to delete entries that are created more
+ * that 30 seconds ago. This means that if a program's hex is not requested
+ * within 30 seconds, it will be discarted.
  **/
 var cleanOldEntries = function(){
-	database.clearOld(15000)
-	.then(delay(10000))
+	database.clearOld(30000)
+	.then(delay(40000))
 	.then(cleanOldEntries)
 	.catch(function(){
 		pass()
-		.then(delay(10000))
+		.then(delay(40000))
 		.then(cleanOldEntries)
 	})
 }
-setTimeout(cleanOldEntries,0);
+
+var cluster = require('cluster');
+if (cluster.isMaster){
+	setTimeout(cleanOldEntries,0);
+}
+
