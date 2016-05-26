@@ -1,9 +1,11 @@
 "use strict";
 var path = require('path');
+var utils = require('./utils');
+var modulePath = utils.modulePath;
 
 exports.settings = {};
 var fs = require('fs');
-var file = fs.readFileSync(path.resolve('node_modules','quirkbot-arduino-hardware', 'avr', 'boards.txt')).toString();
+var file = fs.readFileSync(path.resolve(modulePath('quirkbot-arduino-hardware'), 'avr', 'boards.txt')).toString();
 var lines = file.split('\n');
 lines.forEach(function (line) {
 	var parts = line.split('=');

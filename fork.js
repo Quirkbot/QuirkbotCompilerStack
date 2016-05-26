@@ -11,8 +11,16 @@ var readFile = utils.readFile;
 var readDir = utils.readDir;
 var mkdir = utils.mkdir;
 var copyDir = utils.copyDir;
-var deleteDir = utils.deleteDir;
+var deleteDir = utils.deleteDir;;
+var modulePath = utils.modulePath
 var boardSettings = require('./boardSettings').settings;
+
+// Polyfill for the process (in case running outside a cluster)
+var _process = process || {
+	on: () => {},
+	send: () => {},
+}
+
 /// Interface -------------------------------------------------------------------
 /**
 * Holds the label of this fork. This is permanent id of this for in realtion to
@@ -34,7 +42,7 @@ var SIZE_COMMAND;
 /**
 * Interface with master process
 */
-process.on('message', function(message) {
+_process.on('message', function(message) {
 	if(message.type == 'label'){
 		setup(message.data);
 	}
@@ -48,7 +56,7 @@ process.on('message', function(message) {
 var setup = function(label) {
 	console.log('Fork created: ' +  label);
 	LABEL = label;
-	TMP = '.tmp-' + LABEL;
+	TMP = path.join(__dirname, '.tmp-' + LABEL);
 	BUILD = path.join(TMP, 'build');
 	SKETCHES = path.join(TMP, 'sketches');
 	TOOLS = path.join(TMP, 'tools');
@@ -78,11 +86,11 @@ var init = function () {
 			.then(mkdir(path.resolve(BUILD)))
 			.then(mkdir(path.resolve(TOOLS)))
 			.then(mkdir(path.resolve(SKETCHES)))
-			.then(copyDir(path.resolve('firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
-			.then(copyDir(path.resolve('node_modules', 'npm-arduino-builder'), path.resolve(TOOLS, 'npm-arduino-builder')))
-			.then(copyDir(path.resolve('node_modules', 'npm-arduino-avr-gcc'), path.resolve(TOOLS, 'npm-arduino-avr-gcc')))
-			.then(copyDir(path.resolve('node_modules', 'quirkbot-arduino-hardware'), path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
-			.then(copyDir(path.resolve('node_modules', 'quirkbot-arduino-library'), path.resolve(TOOLS, 'quirkbot-arduino-library')))
+			.then(copyDir(path.resolve(__dirname, 'firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
+			.then(copyDir(path.resolve(modulePath('npm-arduino-builder')), path.resolve(TOOLS, 'npm-arduino-builder')))
+			.then(copyDir(path.resolve(modulePath('npm-arduino-avr-gcc')), path.resolve(TOOLS, 'npm-arduino-avr-gcc')))
+			.then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
+			.then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, 'quirkbot-arduino-library')))
 			.then(resolve)
 			.catch(reject);
 		});
@@ -183,7 +191,7 @@ var init = function () {
 	.then(postleanUp)
 
 	.then(function(){
-		process.send({
+		_process.send({
 			type: 'init',
 			data:{
 				worker: LABEL
@@ -191,6 +199,7 @@ var init = function () {
 		})
 	})
 	.catch(function(error){
+		console.log(error)
 		new Error(error);
 	});
 
@@ -216,7 +225,7 @@ var run = function(id, code){
 		if(sketch.error){
 			console.log('error:\t', sketch.error);
 		}
-		process.send({
+		_process.send({
 			type: 'success',
 			data:{
 				worker: LABEL,
