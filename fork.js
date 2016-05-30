@@ -16,10 +16,9 @@ var modulePath = utils.modulePath
 var boardSettings = require('./boardSettings').settings;
 
 // Polyfill for the process (in case running outside a cluster)
-var _process = process || {
-	on: () => {},
-	send: () => {},
-}
+var _process = process;
+_process.on = process.on || ()=>{};
+_process.send = process.send || ()=>{};
 
 /// Interface -------------------------------------------------------------------
 /**
@@ -67,7 +66,7 @@ var setup = function(label) {
 		path.resolve(SKETCHES, 'firmware.ino');
 	SIZE_COMMAND = path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + ' ' +
 		path.resolve(BUILD, 'firmware.ino.elf');
-	init();
+	return init();
 }
 module.exports.setup = setup;
 /**
@@ -76,133 +75,141 @@ module.exports.setup = setup;
 * requesting compilations.
 */
 var init = function () {
-	if(typeof LABEL === 'undefined') return;
+	return new Promise(function(resolve, reject){
+		if(typeof LABEL === 'undefined') {
+			reject('LABEL is undefined.')
+			return;
+		};
 
-	var precleanUp = function() {
-		return new Promise(function(resolve, reject){
-			pass()
-			.then(deleteDir(path.resolve(TMP)))
-			.then(mkdir(path.resolve(TMP)))
-			.then(mkdir(path.resolve(BUILD)))
-			.then(mkdir(path.resolve(TOOLS)))
-			.then(mkdir(path.resolve(SKETCHES)))
-			.then(copyDir(path.resolve(__dirname, 'firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
-			.then(copyDir(path.resolve(modulePath('npm-arduino-builder')), path.resolve(TOOLS, 'npm-arduino-builder')))
-			.then(copyDir(path.resolve(modulePath('npm-arduino-avr-gcc')), path.resolve(TOOLS, 'npm-arduino-avr-gcc')))
-			.then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
-			.then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, 'quirkbot-arduino-library')))
-			.then(resolve)
-			.catch(reject);
-		});
-	}
-
-	var compileResetFirmware = function() {
-		return new Promise(function(resolve){
-			var precompileCommand =
-				path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
-				'-hardware="' + path.resolve(TOOLS) + '" ' +
-				'-hardware="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
-				'-libraries="' + path.resolve(TOOLS) + '" ' +
-				'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" ' +
-				'-tools="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
-				'-fqbn="quirkbot-arduino-hardware:avr:quirkbot" ' +
-				'-ide-version=10607 ' +
-				'-build-path="' + path.resolve(BUILD) + '" ' +
-				'-verbose ' +
-				path.resolve(SKETCHES, 'firmware.ino');
-
-			pass()
-			.then(execute(precompileCommand))
-			.then(resolve)
-			.catch(function (error) {
-				console.log('Error saving reset firmware.', error);
-				reject(error)
+		var precleanUp = function() {
+			return new Promise(function(resolve, reject){
+				pass()
+				.then(deleteDir(path.resolve(TMP)))
+				.then(mkdir(path.resolve(TMP)))
+				.then(mkdir(path.resolve(BUILD)))
+				.then(mkdir(path.resolve(TOOLS)))
+				.then(mkdir(path.resolve(SKETCHES)))
+				.then(copyDir(path.resolve(__dirname, 'firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
+				.then(copyDir(path.resolve(modulePath('npm-arduino-builder')), path.resolve(TOOLS, 'npm-arduino-builder')))
+				.then(copyDir(path.resolve(modulePath('npm-arduino-avr-gcc')), path.resolve(TOOLS, 'npm-arduino-avr-gcc')))
+				.then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
+				.then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, 'quirkbot-arduino-library')))
+				.then(resolve)
+				.catch(reject);
 			});
-		});
-	}
+		}
 
-	var prepareFastCompilation = function() {
-		return new Promise(function(resolve){
+		var compileResetFirmware = function() {
+			return new Promise(function(resolve){
+				var precompileCommand =
+					path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
+					'-hardware="' + path.resolve(TOOLS) + '" ' +
+					'-hardware="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
+					'-libraries="' + path.resolve(TOOLS) + '" ' +
+					'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" ' +
+					'-tools="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
+					'-fqbn="quirkbot-arduino-hardware:avr:quirkbot" ' +
+					'-ide-version=10607 ' +
+					'-build-path="' + path.resolve(BUILD) + '" ' +
+					'-verbose ' +
+					path.resolve(SKETCHES, 'firmware.ino');
 
-			pass()
-			.then(execute(COMPILE_COMMAND))
-			.then(function(result){
-				var compile = result.stdout
-					.split(/\r?\n/)
-					.filter(function(line) {
-						return line.indexOf('firmware.ino.cpp.o') !== -1
-					})
-					.slice(0,1);
+				pass()
+				.then(execute(precompileCommand))
+				.then(resolve)
+				.catch(function (error) {
+					console.log('Error saving reset firmware.', error);
+					reject(error)
+				});
+			});
+		}
 
-				var _open;
-				var linkAndCopy = result.stdout
-					.split(/\r?\n/)
-					.filter(function(line) {
-						if(!_open){
-							if(line.indexOf('firmware.ino.elf') !== -1){
-								_open = true;
-								return true;
+		var prepareFastCompilation = function() {
+			return new Promise(function(resolve){
+
+				pass()
+				.then(execute(COMPILE_COMMAND))
+				.then(function(result){
+					var compile = result.stdout
+						.split(/\r?\n/)
+						.filter(function(line) {
+							return line.indexOf('firmware.ino.cpp.o') !== -1
+						})
+						.slice(0,1);
+
+					var _open;
+					var linkAndCopy = result.stdout
+						.split(/\r?\n/)
+						.filter(function(line) {
+							if(!_open){
+								if(line.indexOf('firmware.ino.elf') !== -1){
+									_open = true;
+									return true;
+								}
 							}
-						}
-						if(_open){
-							if(line.indexOf('firmware.ino.hex') !== -1){
-								_open = false;
-								return true;
+							if(_open){
+								if(line.indexOf('firmware.ino.hex') !== -1){
+									_open = false;
+									return true;
+								}
 							}
-						}
-					})
+						})
 
-				var build = compile.concat(linkAndCopy);
+					var build = compile.concat(linkAndCopy);
 
-				FAST_COMPILE_COMMAND = build.join(' && ')
-				console.log(FAST_COMPILE_COMMAND);
+					FAST_COMPILE_COMMAND = build.join(' && ')
+					console.log(FAST_COMPILE_COMMAND);
 
-				// Save the command to disk so it can be used by the microcore compiler
-				return pass()
-				.then(writeFile(path.resolve(BUILD, 'fast_compile.sh'), FAST_COMPILE_COMMAND));
+				})
+				.then(resolve)
+				.catch(function (error) {
+					console.log('Error preparing fast compilation.', error);
+					reject(error)
+				});
+			});
+		}
 
+		var prepareForExport = function() {
+			return new Promise(function(resolve, reject){
+				pass()
+				.then(deleteDir(path.resolve(SKETCHES)))
+				.then(deleteDir(path.resolve(TOOLS, 'npm-arduino-builder')))
+				//.then(deleteDir(path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
+				//.then(deleteDir(path.resolve(TOOLS, 'quirkbot-arduino-library')))
+				.then(deleteDir(path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'node_modules')))
+				//.then(deleteDir(path.resolve(BUILD, 'quirkbot-arduino-library')))
+				.then(function() {
+					var RELATIVE_FAST_COMPILE_COMMAND = FAST_COMPILE_COMMAND.split(path.resolve(TOOLS, '..')).join(path.join('..'))
+					// Save the command to disk so it can be used by the microcore compiler
+					return pass()
+					.then(writeFile(path.resolve(BUILD, 'fast_compile.sh'), RELATIVE_FAST_COMPILE_COMMAND));
+				})
+				.then(resolve)
+				.catch(reject);
+			});
+		}
+
+		pass()
+		.then(precleanUp)
+		.then(compileResetFirmware)
+		.then(prepareFastCompilation)
+		.then(prepareForExport)
+
+		.then(function(){
+			_process.send({
+				type: 'init',
+				data:{
+					worker: LABEL
+				}
 			})
-			.then(resolve)
-			.catch(function (error) {
-				console.log('Error preparing fast compilation.', error);
-				reject(error)
-			});
-		});
-	}
-
-	var postleanUp = function() {
-		return new Promise(function(resolve, reject){
-			pass()
-			.then(deleteDir(path.resolve(SKETCHES)))
-			.then(deleteDir(path.resolve(TOOLS, 'npm-arduino-builder')))
-			//.then(deleteDir(path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
-			//.then(deleteDir(path.resolve(TOOLS, 'quirkbot-arduino-library')))
-			.then(deleteDir(path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'node_modules')))
-			//.then(deleteDir(path.resolve(BUILD, 'quirkbot-arduino-library')))
-			.then(resolve)
-			.catch(reject);
-		});
-	}
-
-	pass()
-	.then(precleanUp)
-	.then(compileResetFirmware)
-	.then(prepareFastCompilation)
-	.then(postleanUp)
-
-	.then(function(){
-		_process.send({
-			type: 'init',
-			data:{
-				worker: LABEL
-			}
+			resolve(LABEL);
 		})
-	})
-	.catch(function(error){
-		console.log(error)
-		new Error(error);
-	});
+		.catch(function(error){
+			console.log(error);
+			reject(error);
+		});
 
+	})
 
 }
 module.exports.init = init;
@@ -210,31 +217,39 @@ module.exports.init = init;
 * This is the entrypoint of a compilation
 */
 var run = function(id, code){
-	if(typeof LABEL === 'undefined' || typeof id === 'undefined' ) return;
+	return new Promise(function(resolve, reject){
+		if(typeof LABEL === 'undefined' || typeof id === 'undefined' ){
+			reject('LABEL or id are undefined.')
+			return;
+		};
 
-	//console.log('run', LABEL, id)
-	var sketch = {
-		_id: id,
-		code: code
-	}
-	var now = Date.now();
-	pass(sketch)
-	.then(compile)
-	.then(function(){
-		console.log('finished', LABEL, id, Date.now() - now);
-		if(sketch.error){
-			console.log('error:\t', sketch.error);
+		//console.log('run', LABEL, id)
+		var sketch = {
+			_id: id,
+			code: code
 		}
-		_process.send({
-			type: 'success',
-			data:{
+		var now = Date.now();
+		pass(sketch)
+		.then(compile)
+		.then(function(){
+			console.log('finished', LABEL, id, Date.now() - now);
+			if(sketch.error){
+				console.log('error:\t', sketch.error);
+
+			}
+			var data = {
 				worker: LABEL,
 				id: sketch._id,
 				hex: sketch.hex,
 				size: sketch.size,
 				error: sketch.error
-			}
-		})
+			};
+			_process.send({
+				type: 'success',
+				data: data
+			});
+			resolve(data);
+		});
 	});
 }
 module.exports.run = run;
