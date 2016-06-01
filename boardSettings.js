@@ -1,4 +1,5 @@
 "use strict";
+var Promise = require('es6-promise').Promise;
 var path = require('path');
 var utils = require('./utils');
 var modulePath = utils.modulePath;
