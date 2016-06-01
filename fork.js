@@ -17,8 +17,8 @@ var boardSettings = require('./boardSettings').settings;
 
 // Polyfill for the process (in case running outside a cluster)
 var _process = process;
-_process.on = process.on || ()=>{};
-_process.send = process.send || ()=>{};
+_process.on = process.on || function() {};
+_process.send = process.send || function() {};
 
 /// Interface -------------------------------------------------------------------
 /**
