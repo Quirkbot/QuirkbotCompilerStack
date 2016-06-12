@@ -20,5 +20,11 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Quirkbot/QuirkbotCompiler.git"
+  },
+  "scripts":{
+      "deploy:worker:stage" : "git checkout develop && eb deploy quirkbot-compiler-worker-stage",
+      "deploy:worker:production" : "git checkout develop && eb deploy quirkbot-compiler-worker-production",
+      "deploy:web:stage" : "git checkout develop && eb deploy quirkbot-compiler-web-stage",
+      "deploy:web:production" : "git checkout develop && eb deploy quirkbot-compiler-web-production"
   }
 }
