@@ -5,6 +5,7 @@
   "description": "Cloud service that compiles Quirkbot programs.",
   "homepage": "https://github.com/Quirkbot/QuirkbotCompiler",
   "dependencies": {
+    "diskdb": "0.1.15",
     "es6-promise": "3.2.1",
     "mongoose": "4.5.10",
     "ncp": "2.0.0",

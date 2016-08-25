@@ -204,7 +204,7 @@ var prepareCluster = function(){
 							if(pushes >= count) return;
 							if(!fork.free) return;
 							pushes++;
-							console.log('push', fork.label)
+							//console.log('push', fork.label)
 							doJob(fork)
 						})
 						//console.log('- job!')
