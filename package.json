@@ -16,8 +16,7 @@
     "quirkbot-arduino-library": "2.4.0",
     "request": "2.65.0",
     "rimraf": "2.4.4",
-    "throng": "1.0.1",
-    "tungus": "git@github.com:Quirkbot/tungus.git#bd68461e2db699b38a35417eac86c279be2fe84f"
+    "throng": "1.0.1"
   },
   "repository": {
     "type": "git",
