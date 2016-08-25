@@ -11,8 +11,8 @@ var readFile = utils.readFile;
 var readDir = utils.readDir;
 var mkdir = utils.mkdir;
 var copyDir = utils.copyDir;
-var deleteDir = utils.deleteDir;;
-var modulePath = utils.modulePath
+var deleteDir = utils.deleteDir;
+var modulePath = utils.modulePath;
 var boardSettings = require('./boardSettings').settings;
 
 // Polyfill for the process (in case running outside a cluster)

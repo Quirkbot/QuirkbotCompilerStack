@@ -4,30 +4,71 @@ var path = require('path');
 var utils = require('./utils');
 var pass = utils.pass;
 var execute = utils.execute;
-var readFile = utils.readFile;
+var writeFile = utils.writeFile;
 var findFiles = utils.findFiles;
+var readFile = utils.readFile;
+var readDir = utils.readDir;
+var mkdir = utils.mkdir;
+var copyDir = utils.copyDir;
+var deleteDir = utils.deleteDir;
+var modulePath = utils.modulePath;
 var execSync = require('child_process').execSync;
 var database = require('./database');
 var cluster = require('cluster');
 var boardSettings = require('./boardSettings').settings;
 
 /**
+ * Create control variables
+ **/
+var TMP;
+var BUILD;
+var SKETCHES;
+var TOOLS;
+var setup = function(label) {
+	return new Promise(function(resolve){
+		TMP = path.join(__dirname, '.tmp-master');
+		BUILD = path.join(TMP, 'build');
+		SKETCHES = path.join(TMP, 'sketches');
+		TOOLS = path.join(TMP, 'tools');
+		resolve();
+	});
+}
+
+/**
  * Clean up temporary directories
  **/
-var cleanUp = function() {
+ var precleanUp = function() {
+	 return new Promise(function(resolve, reject){
+		 pass()
+		 .then(deleteDir(path.resolve(TMP)))
+		 .then(mkdir(path.resolve(TMP)))
+		 .then(mkdir(path.resolve(BUILD)))
+		 .then(mkdir(path.resolve(TOOLS)))
+		 .then(mkdir(path.resolve(SKETCHES)))
+		 .then(copyDir(path.resolve(__dirname, 'firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
+		 .then(copyDir(path.resolve(modulePath('npm-arduino-builder')), path.resolve(TOOLS, 'npm-arduino-builder')))
+		 .then(copyDir(path.resolve(modulePath('npm-arduino-avr-gcc')), path.resolve(TOOLS, 'npm-arduino-avr-gcc')))
+		 .then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
+		 .then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, 'quirkbot-arduino-library')))
+		 .then(resolve)
+		 .catch(reject);
+	 });
+}
+
+/*var cleanUp = function() {
 	return new Promise(function(resolve){
 		execSync('rm -r .tmp-build; mkdir .tmp-build');
 		execSync('rm -r .tmp-sketches; mkdir .tmp-sketches');
 		resolve();
 	});
-}
+}*/
 /**
  * Save configs regarding the library and hardware info
  **/
 var saveLibraryConfig = function() {
 	return new Promise(function(resolve){
 		pass()
-		.then(readFile(path.resolve('node_modules','quirkbot-arduino-library','library.properties')))
+		.then(readFile(path.resolve(TOOLS, 'quirkbot-arduino-library', 'library.properties')))
 		.then(function (info) {
 			database.setConfig('library-info',info);
 			resolve();
@@ -41,7 +82,7 @@ var saveLibraryConfig = function() {
 var saveHardwareConfig = function() {
 	return new Promise(function(resolve){
 		pass()
-		.then(readFile(path.resolve('node_modules','quirkbot-arduino-hardware', 'avr', 'version.txt')))
+		.then(readFile(path.resolve(TOOLS, 'quirkbot-arduino-hardware', 'avr', 'version.txt')))
 		.then(function (info) {
 			database.setConfig('hardware-info',info);
 			resolve();
@@ -58,17 +99,17 @@ var saveHardwareConfig = function() {
 var compileResetFirmaware = function() {
 	return new Promise(function(resolve){
 		var precompileCommand =
-			path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
-			'-hardware="' + path.resolve('node_modules') + '" ' +
-			'-hardware="' + path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
-			'-libraries="' + path.resolve('node_modules') + '" ' +
-			'-tools="' + path.resolve('node_modules', 'npm-arduino-avr-gcc', 'tools') + '" ' +
-			'-tools="' + path.resolve('node_modules', 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
+			path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
+			'-hardware="' + path.resolve(TOOLS) + '" ' +
+			'-hardware="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
+			'-libraries="' + path.resolve(TOOLS) + '" ' +
+			'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" ' +
+			'-tools="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
 			'-fqbn="quirkbot-arduino-hardware:avr:quirkbot" ' +
 			'-ide-version=10607 ' +
-			'-build-path="' + path.resolve('.tmp-build') + '" ' +
+			'-build-path="' + path.resolve(BUILD) + '" ' +
 			'-verbose ' +
-			path.resolve('firmware', 'firmware.ino');
+			path.resolve(SKETCHES, 'firmware.ino');
 
 		console.log(precompileCommand);
 
@@ -77,7 +118,7 @@ var compileResetFirmaware = function() {
 		.then(function(result){
 			console.log(result.stdout)
 		})
-		.then(readFile(path.resolve('.tmp-build','firmware.ino.hex')))
+		.then(readFile(path.resolve(BUILD, 'firmware.ino.hex')))
 		.then(function (hex) {
 			database.setConfig('firmware-reset', hex);
 			resolve();
@@ -222,7 +263,8 @@ var prepareCluster = function(){
  * Start application
  **/
 pass()
-.then(cleanUp)
+.then(setup)
+.then(precleanUp)
 .then(saveLibraryConfig)
 .then(saveHardwareConfig)
 .then(compileResetFirmaware)
