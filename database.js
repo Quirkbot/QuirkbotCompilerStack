@@ -59,11 +59,23 @@ exports.create = function(code){
 		var instance = new ProgramModel({
 			code: code
 		});
-		instance.save(function(error){
-			if(error) console.log(error)
+
+		instance.save(function(error, instance){
+			if(error) console.log(error);
+
+			if(process.env.NODE_ENV == 'lite') {
+				// When using tungus, we need to wait for the save before the
+				// instance id is avaible.
+				resolve(instance.id);
+			}
 		});
 		utils.timeReportEnd(report, 'db create');
-		resolve(instance.id);
+
+		if(process.env.NODE_ENV != 'lite') {
+			// When using mongo, the instance id is already avaiable, so we can
+			// resolve early, and not wait for the save operation to complete.
+			resolve(instance.id);
+		}
 	}
 	return new Promise(promise);
 }
