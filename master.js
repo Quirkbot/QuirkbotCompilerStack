@@ -39,29 +39,22 @@ var setup = function(label) {
  **/
  var precleanUp = function() {
 	 return new Promise(function(resolve, reject){
-		 pass()
-		 .then(deleteDir(path.resolve(TMP)))
-		 .then(mkdir(path.resolve(TMP)))
-		 .then(mkdir(path.resolve(BUILD)))
-		 .then(mkdir(path.resolve(TOOLS)))
-		 .then(mkdir(path.resolve(SKETCHES)))
-		 .then(copyDir(path.resolve(__dirname, 'firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
-		 .then(copyDir(path.resolve(modulePath('npm-arduino-builder')), path.resolve(TOOLS, 'npm-arduino-builder')))
-		 .then(copyDir(path.resolve(modulePath('npm-arduino-avr-gcc')), path.resolve(TOOLS, 'npm-arduino-avr-gcc')))
-		 .then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
-		 .then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, 'quirkbot-arduino-library')))
-		 .then(resolve)
-		 .catch(reject);
+		pass()
+		.then(deleteDir(path.resolve(TMP)))
+		.then(mkdir(path.resolve(TMP)))
+		.then(mkdir(path.resolve(BUILD)))
+		.then(mkdir(path.resolve(TOOLS)))
+		.then(mkdir(path.resolve(SKETCHES)))
+		.then(copyDir(path.resolve(__dirname, 'firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
+		.then(copyDir(path.resolve(modulePath('npm-arduino-builder')), path.resolve(TOOLS, 'npm-arduino-builder')))
+		//.then(copyDir(path.resolve(modulePath('npm-arduino-avr-gcc')), path.resolve(TOOLS, 'npm-arduino-avr-gcc')))
+		.then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
+		.then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, 'quirkbot-arduino-library')))
+		.then(resolve)
+		.catch(reject);
 	 });
 }
 
-/*var cleanUp = function() {
-	return new Promise(function(resolve){
-		execSync('rm -r .tmp-build; mkdir .tmp-build');
-		execSync('rm -r .tmp-sketches; mkdir .tmp-sketches');
-		resolve();
-	});
-}*/
 /**
  * Save configs regarding the library and hardware info
  **/
@@ -103,7 +96,8 @@ var compileResetFirmaware = function() {
 			'-hardware="' + path.resolve(TOOLS) + '" ' +
 			'-hardware="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
 			'-libraries="' + path.resolve(TOOLS) + '" ' +
-			'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" ' +
+			//'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" ' +
+			'-tools="' + path.resolve(modulePath('npm-arduino-avr-gcc'), 'tools') + '" ' +
 			'-tools="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
 			'-fqbn="quirkbot-arduino-hardware:avr:quirkbot" ' +
 			'-ide-version=10607 ' +
