@@ -6,7 +6,7 @@
   "homepage": "https://github.com/Quirkbot/QuirkbotCompiler",
   "dependencies": {
     "es6-promise": "3.2.1",
-    "mongoose": "3.8.*",
+    "mongoose": "4.5.10",
     "ncp": "2.0.0",
     "newrelic": "1.27.2",
     "npm-arduino-avr-gcc": "4.8.1-arduino5",
@@ -16,7 +16,7 @@
     "request": "2.65.0",
     "rimraf": "2.4.4",
     "throng": "1.0.1",
-    "tungus": "0.0.5"
+    "tungus": "git@github.com:Quirkbot/tungus.git#bd68461e2db699b38a35417eac86c279be2fe84f"
   },
   "repository": {
     "type": "git",
