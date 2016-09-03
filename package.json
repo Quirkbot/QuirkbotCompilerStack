@@ -1,12 +1,13 @@
 {
   "name": "quirkbot-compiler",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "author": "Quirkbot",
   "description": "Cloud service that compiles Quirkbot programs.",
   "homepage": "https://github.com/Quirkbot/QuirkbotCompiler",
   "dependencies": {
+    "diskdb": "0.1.15",
     "es6-promise": "3.2.1",
-    "mongoose": "4.2.5",
+    "mongoose": "4.5.10",
     "ncp": "2.0.0",
     "newrelic": "1.27.2",
     "npm-arduino-avr-gcc": "4.8.1-arduino5",
@@ -21,12 +22,12 @@
     "type": "git",
     "url": "https://github.com/Quirkbot/QuirkbotCompiler.git"
   },
-  "scripts":{
-      "deploy:worker:stage" : "git checkout develop && eb deploy quirkbot-compiler-worker-stage",
-      "deploy:worker:production" : "git checkout develop && eb deploy quirkbot-compiler-worker-production",
-      "deploy:web:stage" : "git checkout develop && eb deploy quirkbot-compiler-web-stage",
-      "deploy:web:production" : "git checkout develop && eb deploy quirkbot-compiler-web-production",
-      "deploy:production" : "npm run deploy:web:production && npm run deploy:worker:production",
-      "deploy:stage" : "npm run deploy:web:stage && npm run deploy:worker:stage"
+  "scripts": {
+    "deploy:worker:stage": "git checkout develop && eb deploy quirkbot-compiler-worker-stage",
+    "deploy:worker:production": "git checkout develop && eb deploy quirkbot-compiler-worker-production",
+    "deploy:web:stage": "git checkout develop && eb deploy quirkbot-compiler-web-stage",
+    "deploy:web:production": "git checkout develop && eb deploy quirkbot-compiler-web-production",
+    "deploy:production": "npm run deploy:web:production && npm run deploy:worker:production",
+    "deploy:stage": "npm run deploy:web:stage && npm run deploy:worker:stage"
   }
 }

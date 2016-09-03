@@ -266,3 +266,5 @@ if (cluster.isMaster){
 	setTimeout(cleanOldEntries,0);
 }
 
+process.on( 'SIGINT', process.exit ) // catch ctrl-c
+process.on( 'SIGTERM', process.exit ) // catch kill

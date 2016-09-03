@@ -11,8 +11,8 @@ var readFile = utils.readFile;
 var readDir = utils.readDir;
 var mkdir = utils.mkdir;
 var copyDir = utils.copyDir;
-var deleteDir = utils.deleteDir;;
-var modulePath = utils.modulePath
+var deleteDir = utils.deleteDir;
+var modulePath = utils.modulePath;
 var boardSettings = require('./boardSettings').settings;
 
 // Polyfill for the process (in case running outside a cluster)
@@ -64,7 +64,13 @@ var setup = function(label) {
 		'-build-path="' + path.resolve(BUILD) + '" ' +
 		'-verbose ' +
 		path.resolve(SKETCHES, 'firmware.ino');
-	SIZE_COMMAND = path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + ' ' +
+	SIZE_COMMAND =
+		// On "lite", use the avr-gcc direcly from the node_modules
+		(process.env.NODE_ENV === 'lite' ?
+			path.resolve(modulePath('npm-arduino-avr-gcc'), 'tools', 'avr', 'bin', 'avr-size') + ' ' 
+			:
+			path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + ' '
+		)+
 		path.resolve(BUILD, 'firmware.ino.elf');
 	return init();
 }
@@ -91,7 +97,13 @@ var init = function () {
 				.then(mkdir(path.resolve(SKETCHES)))
 				.then(copyDir(path.resolve(__dirname, 'firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
 				.then(copyDir(path.resolve(modulePath('npm-arduino-builder')), path.resolve(TOOLS, 'npm-arduino-builder')))
-				.then(copyDir(path.resolve(modulePath('npm-arduino-avr-gcc')), path.resolve(TOOLS, 'npm-arduino-avr-gcc')))
+				.then(function(){
+					// On "lite", use the avr-gcc direcly from the node_modules
+					if(process.env.NODE_ENV === 'lite') {
+						return;
+					}
+					return copyDir(path.resolve(modulePath('npm-arduino-avr-gcc')), path.resolve(TOOLS, 'npm-arduino-avr-gcc'))()
+				})
 				.then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, 'quirkbot-arduino-hardware')))
 				.then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, 'quirkbot-arduino-library')))
 				.then(resolve)
@@ -106,7 +118,12 @@ var init = function () {
 					'-hardware="' + path.resolve(TOOLS) + '" ' +
 					'-hardware="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
 					'-libraries="' + path.resolve(TOOLS) + '" ' +
-					'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" ' +
+					// On "lite", use the avr-gcc direcly from the node_modules
+					(process.env.NODE_ENV === 'lite' ?
+						'-tools="' + path.resolve(modulePath('npm-arduino-avr-gcc'), 'tools') + '" '
+						:
+						'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" '
+					)+
 					'-tools="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
 					'-fqbn="quirkbot-arduino-hardware:avr:quirkbot" ' +
 					'-ide-version=10607 ' +
