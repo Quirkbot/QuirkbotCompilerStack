@@ -3,7 +3,7 @@ var Promise = require('es6-promise').Promise;
 var utils = require('./utils');
 var db = require('diskdb');
 
-db = db.connect(process.env.DISK_DB_PATH  || './db')
+db = db.connect(process.env.COMPILER_DISK_DB_PATH  || process.env.DISK_DB_PATH  || './db')
 db.loadCollections([
 	'programs',
 	'configs'
