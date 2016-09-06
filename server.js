@@ -36,7 +36,7 @@ var database = require('./database');
  * http://{host}:{port}/c{config-key}
  */
 var start = function () {
-	var port = process.env.PORT || 8080;
+	var port = process.env.COMPILER_PORT || process.env.PORT || 8080;
 	var server = http.createServer(function (request, response) {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 
