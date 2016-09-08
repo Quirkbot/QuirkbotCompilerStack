@@ -1,3 +1,9 @@
+// In case this process is being spawned from a parent, make sure to exit
+// in case the parent is killed
+process.on('disconnect', function() {
+	process.exit();
+});
+
 "use strict";
 if(
 	process.env.NEW_RELIC_APP_NAME
