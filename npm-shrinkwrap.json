@@ -1,6 +1,6 @@
 {
   "name": "quirkbot-compiler",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "dependencies": {
     "ansi-regex": {
       "version": "2.0.0",
@@ -1952,11 +1952,13 @@
     },
     "quirkbot-arduino-hardware": {
       "version": "0.4.4",
-      "from": "quirkbot-arduino-hardware@0.4.4"
+      "from": "quirkbot-arduino-hardware@0.4.4",
+      "resolved": "https://registry.npmjs.org/quirkbot-arduino-hardware/-/quirkbot-arduino-hardware-0.4.4.tgz"
     },
     "quirkbot-arduino-library": {
       "version": "2.4.0",
-      "from": "quirkbot-arduino-library@2.4.0"
+      "from": "quirkbot-arduino-library@2.4.0",
+      "resolved": "https://registry.npmjs.org/quirkbot-arduino-library/-/quirkbot-arduino-library-2.4.0.tgz"
     },
     "regexp-clone": {
       "version": "0.0.1",
