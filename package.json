@@ -1,6 +1,6 @@
 {
   "name": "quirkbot-compiler",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "author": "Quirkbot",
   "description": "Cloud service that compiles Quirkbot programs.",
   "homepage": "https://github.com/Quirkbot/QuirkbotCompiler",
@@ -23,12 +23,12 @@
     "url": "https://github.com/Quirkbot/QuirkbotCompiler.git"
   },
   "scripts": {
-    "shrinkwrap": "sh prepublish.sh",
-    "deploy:npm": "npm run shrinkwrap && git checkout master && npm publish",
-    "deploy:worker:stage": "npm run shrinkwrap && git checkout develop && eb deploy quirkbot-compiler-worker-stage",
-    "deploy:worker:production": "npm run shrinkwrap && git checkout develop && eb deploy quirkbot-compiler-worker-production",
-    "deploy:web:stage": "npm run shrinkwrap && git checkout develop && eb deploy quirkbot-compiler-web-stage",
-    "deploy:web:production": "npm run shrinkwrap && git checkout develop && eb deploy quirkbot-compiler-web-production",
+    "shrinkwrap": "mv node_modules original_node_modules && npm install --production && npm shrinkwrap && rm -r node_modules && mv original_node_modules node_modules",
+    "deploy:npm": "git checkout master && npm publish",
+    "deploy:worker:stage": "git checkout develop && eb deploy quirkbot-compiler-worker-stage",
+    "deploy:worker:production": "git checkout develop && eb deploy quirkbot-compiler-worker-production",
+    "deploy:web:stage": "git checkout develop && eb deploy quirkbot-compiler-web-stage",
+    "deploy:web:production": "git checkout develop && eb deploy quirkbot-compiler-web-production",
     "deploy:production": "npm run deploy:web:production && npm run deploy:worker:production",
     "deploy:stage": "npm run deploy:web:stage && npm run deploy:worker:stage"
   }
