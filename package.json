@@ -1,6 +1,6 @@
 {
   "name": "quirkbot-compiler",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "author": "Quirkbot",
   "description": "Cloud service that compiles Quirkbot programs.",
   "homepage": "https://github.com/Quirkbot/QuirkbotCompiler",
@@ -23,7 +23,7 @@
     "url": "https://github.com/Quirkbot/QuirkbotCompiler.git"
   },
   "scripts": {
-    "shrinkwrap": "rm -rf node_modules && npm install --production && npm shrinkwrap",
+    "shrinkwrap": "rm -rf node_modules && rm -rf npm-shrinkwrap.json && npm install --production && npm shrinkwrap",
     "deploy:npm": "git checkout master && npm publish",
     "deploy:worker:stage": "git checkout develop && eb deploy quirkbot-compiler-worker-stage",
     "deploy:worker:production": "git checkout develop && eb deploy quirkbot-compiler-worker-production",

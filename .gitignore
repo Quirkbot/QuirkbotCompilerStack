@@ -4,6 +4,7 @@ node_modules
 npm-debug.log
 .db
 db
+._t*
 .tmp*
 .tmp-sketches*
 .tmp-build*
