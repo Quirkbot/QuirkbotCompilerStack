@@ -1,5 +1,5 @@
 "use strict";
-var Promise = require('es6-promise').Promise;
+if(!Promise) var Promise = require('es6-promise').Promise;
 var fs = require('fs');
 var ncp = require('ncp');
 var rimraf = require('rimraf');

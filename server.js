@@ -12,7 +12,7 @@ if(
 ) {
 	var newrelic = require( 'newrelic' );
 }
-var Promise = require('es6-promise').Promise;
+if(!Promise) var Promise = require('es6-promise').Promise;
 var throng = require('throng');
 var utils = require('./utils');
 var pass = utils.pass;
