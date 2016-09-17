@@ -1,6 +1,6 @@
 {
   "name": "quirkbot-compiler",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "author": "Quirkbot",
   "description": "Cloud service that compiles Quirkbot programs.",
   "homepage": "https://github.com/Quirkbot/QuirkbotCompiler",
@@ -14,7 +14,6 @@
     "npm-arduino-builder": "1.3.8-gz",
     "quirkbot-arduino-hardware": "0.4.4",
     "quirkbot-arduino-library": "2.4.0",
-    "request": "2.65.0",
     "rimraf": "2.4.4",
     "throng": "1.0.1"
   },
