@@ -191,6 +191,11 @@ var init = function () {
 					FAST_COMPILE_COMMAND = 'cd ' + TMP + ' && ' +
 					build.join(' && ').split(TMP + path.sep).join('');
 
+					if(process.platform === 'win32'){
+						FAST_COMPILE_COMMAND = FAST_COMPILE_COMMAND
+						.split('/').join('\\').split('\'').join('');
+					}
+
 					console.log('FAST_COMPILE_COMMAND',FAST_COMPILE_COMMAND);
 
 				})
