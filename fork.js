@@ -39,6 +39,8 @@ var SKETCHES_SLUG;
 var TOOLS;
 var TOOLS_SLUG;
 var COMPILE_COMMAND;
+var HARDWARE_SLUG;
+var LIBRARY_SLUG;
 var FAST_COMPILE_COMMAND;
 var SIZE_COMMAND;
 
@@ -59,10 +61,12 @@ _process.on('message', function(message) {
 var setup = function(label) {
 	console.log('Fork created: ' +  label);
 	LABEL = label;
-	TMP_SLUG = '._t-' + LABEL;
-	BUILD_SLUG = '_b';
-	SKETCHES_SLUG = '_s';
-	TOOLS_SLUG = '_t';
+	TMP_SLUG = '_t' + LABEL;
+	BUILD_SLUG = 'b';
+	SKETCHES_SLUG = 's';
+	TOOLS_SLUG = 't';
+	HARDWARE_SLUG = 'h';
+	LIBRARY_SLUG = 'l';
 	TMP = path.join(__dirname, TMP_SLUG );
 	BUILD = path.join(TMP, BUILD_SLUG);
 	SKETCHES = path.join(TMP, SKETCHES_SLUG);
@@ -112,8 +116,8 @@ var init = function () {
 					}
 					return copyDir(path.resolve(modulePath('npm-arduino-avr-gcc')), path.resolve(TOOLS, 'npm-arduino-avr-gcc'))()
 				})
-				.then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, '_h')))
-				.then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, '_l')))
+				.then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, HARDWARE_SLUG)))
+				.then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, LIBRARY_SLUG)))
 				.then(resolve)
 				.catch(reject);
 			});
@@ -133,7 +137,7 @@ var init = function () {
 						'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" '
 					)+
 					'-tools="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
-					'-fqbn="_h:avr:quirkbot" ' +
+					'-fqbn="'+HARDWARE_SLUG+':avr:quirkbot" ' +
 					'-ide-version=10607 ' +
 					'-build-path="' + path.resolve(BUILD) + '" ' +
 					'-verbose ' +
@@ -182,13 +186,12 @@ var init = function () {
 
 					var build = compile.concat(linkAndCopy);
 
-					FAST_COMPILE_COMMAND = build.join(' && ')
-						.split(TMP).join(TMP_SLUG)
-						.split(BUILD).join(BUILD_SLUG)
-						.split(SKETCHES).join(SKETCHES_SLUG)
-						.split(TOOLS).join(TOOLS_SLUG)
+					// As windows complains about 'too long command line', we
+					// relativise all the paths, and cd to the root directory
+					FAST_COMPILE_COMMAND = 'cd ' + TMP + ' && ' +
+					build.join(' && ').split(TMP + path.sep).join('');
 
-					console.log(FAST_COMPILE_COMMAND);
+					console.log('FAST_COMPILE_COMMAND',FAST_COMPILE_COMMAND);
 
 				})
 				.then(resolve)
@@ -204,10 +207,10 @@ var init = function () {
 				pass()
 				.then(deleteDir(path.resolve(SKETCHES)))
 				.then(deleteDir(path.resolve(TOOLS, 'npm-arduino-builder')))
-				//.then(deleteDir(path.resolve(TOOLS, '_h')))
-				//.then(deleteDir(path.resolve(TOOLS, '_l')))
+				//.then(deleteDir(path.resolve(TOOLS, HARDWARE_SLUG)))
+				//.then(deleteDir(path.resolve(TOOLS, LIBRARY_SLUG)))
 				.then(deleteDir(path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'node_modules')))
-				//.then(deleteDir(path.resolve(BUILD, '_l')))
+				//.then(deleteDir(path.resolve(BUILD, LIBRARY_SLUG)))
 				.then(function() {
 					var RELATIVE_FAST_COMPILE_COMMAND = FAST_COMPILE_COMMAND.split(path.resolve(TOOLS, '..')).join(path.join('..'))
 					// Save the command to disk so it can be used by the microcore compiler

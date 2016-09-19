@@ -19,21 +19,25 @@ var boardSettings = require('./boardSettings').settings;
 
 /**
  * Create control variables
- **/
- var TMP;
- var TMP_SLUG;
- var BUILD;
- var BUILD_SLUG;
- var SKETCHES;
- var SKETCHES_SLUG;
- var TOOLS;
- var TOOLS_SLUG;
+**/
+var TMP;
+var TMP_SLUG;
+var BUILD;
+var BUILD_SLUG;
+var SKETCHES;
+var SKETCHES_SLUG;
+var TOOLS;
+var TOOLS_SLUG;
+var HARDWARE_SLUG;
+var LIBRARY_SLUG;
 var setup = function(label) {
 	return new Promise(function(resolve){
-		TMP_SLUG = '._t-m';
-		BUILD_SLUG = '_b';
-		SKETCHES_SLUG = '_s';
-		TOOLS_SLUG = '_t';
+		TMP_SLUG = '_tm';
+		BUILD_SLUG = 'b';
+		SKETCHES_SLUG = 's';
+		TOOLS_SLUG = 't';
+		HARDWARE_SLUG = 'h';
+		LIBRARY_SLUG = 'l';
 		TMP = path.join(__dirname, TMP_SLUG );
 		BUILD = path.join(TMP, BUILD_SLUG);
 		SKETCHES = path.join(TMP, SKETCHES_SLUG);
@@ -44,8 +48,8 @@ var setup = function(label) {
 
 /**
  * Clean up temporary directories
- **/
- var precleanUp = function() {
+**/
+var precleanUp = function() {
 	 return new Promise(function(resolve, reject){
 		pass()
 		.then(deleteDir(path.resolve(TMP)))
@@ -56,8 +60,8 @@ var setup = function(label) {
 		.then(copyDir(path.resolve(__dirname, 'firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
 		.then(copyDir(path.resolve(modulePath('npm-arduino-builder')), path.resolve(TOOLS, 'npm-arduino-builder')))
 		//.then(copyDir(path.resolve(modulePath('npm-arduino-avr-gcc')), path.resolve(TOOLS, 'npm-arduino-avr-gcc')))
-		.then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, '_h')))
-		.then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, '_l')))
+		.then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, HARDWARE_SLUG)))
+		.then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, LIBRARY_SLUG)))
 		.then(resolve)
 		.catch(reject);
 	 });
@@ -65,11 +69,11 @@ var setup = function(label) {
 
 /**
  * Save configs regarding the library and hardware info
- **/
+**/
 var saveLibraryConfig = function() {
 	return new Promise(function(resolve){
 		pass()
-		.then(readFile(path.resolve(TOOLS, '_l', 'library.properties')))
+		.then(readFile(path.resolve(TOOLS, LIBRARY_SLUG, 'library.properties')))
 		.then(function (info) {
 			database.setConfig('library-info',info);
 			resolve();
@@ -83,7 +87,7 @@ var saveLibraryConfig = function() {
 var saveHardwareConfig = function() {
 	return new Promise(function(resolve){
 		pass()
-		.then(readFile(path.resolve(TOOLS, '_h', 'avr', 'version.txt')))
+		.then(readFile(path.resolve(TOOLS, HARDWARE_SLUG, 'avr', 'version.txt')))
 		.then(function (info) {
 			database.setConfig('hardware-info',info);
 			resolve();
@@ -96,7 +100,7 @@ var saveHardwareConfig = function() {
 }
 /**
  * Compile the reset firmware
- **/
+**/
 var compileResetFirmaware = function() {
 	return new Promise(function(resolve){
 		var precompileCommand =
@@ -107,7 +111,7 @@ var compileResetFirmaware = function() {
 			//'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" ' +
 			'-tools="' + path.resolve(modulePath('npm-arduino-avr-gcc'), 'tools') + '" ' +
 			'-tools="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
-			'-fqbn="_h:avr:quirkbot" ' +
+			'-fqbn="'+HARDWARE_SLUG+':avr:quirkbot" ' +
 			'-ide-version=10607 ' +
 			'-build-path="' + path.resolve(BUILD) + '" ' +
 			'-verbose ' +
@@ -134,7 +138,7 @@ var compileResetFirmaware = function() {
 }
 /**
  * Prepare cluster
- **/
+**/
 var prepareCluster = function(){
 	return new Promise(function(resolve, reject){
 		var forks = [];
@@ -263,7 +267,7 @@ var prepareCluster = function(){
 };
 /**
  * Start application
- **/
+**/
 pass()
 .then(setup)
 .then(precleanUp)
