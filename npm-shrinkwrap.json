@@ -1,6 +1,6 @@
 {
   "name": "quirkbot-compiler",
-  "version": "0.7.9",
+  "version": "0.7.10",
   "dependencies": {
     "ansi-styles": {
       "version": "1.0.0",
