@@ -1,5 +1,6 @@
 "use strict";
-if(!Promise) var Promise = require('es6-promise').Promise;
+if(global.Promise) var Promise = global.Promise;
+else var Promise = require('es6-promise').Promise;
 var utils = require('./utils');
 var db = require('diskdb');
 

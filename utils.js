@@ -1,5 +1,6 @@
 "use strict";
-if(!Promise) var Promise = require('es6-promise').Promise;
+if(global.Promise) var Promise = global.Promise;
+else var Promise = require('es6-promise').Promise;
 var fs = require('fs');
 var ncp = require('ncp');
 var rimraf = require('rimraf');
