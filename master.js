@@ -39,10 +39,10 @@ var setup = function(label) {
 		TOOLS_SLUG = 't';
 		HARDWARE_SLUG = 'h';
 		LIBRARY_SLUG = 'l';
-		TMP = path.join(__dirname, TMP_SLUG );
-		BUILD = path.join(TMP, BUILD_SLUG);
-		SKETCHES = path.join(TMP, SKETCHES_SLUG);
-		TOOLS = path.join(TMP, TOOLS_SLUG);
+		TMP = path.resolve( process.env.COMPILER_BUILD_ROOT || process.env.BUILD_ROOT || './', TMP_SLUG );
+		BUILD = path.resolve(TMP, BUILD_SLUG);
+		SKETCHES = path.resolve(TMP, SKETCHES_SLUG);
+		TOOLS = path.resolve(TMP, TOOLS_SLUG);
 		resolve();
 	});
 }
