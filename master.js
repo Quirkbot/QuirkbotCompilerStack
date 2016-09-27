@@ -105,7 +105,7 @@ var saveHardwareConfig = function() {
 var compileResetFirmaware = function() {
 	return new Promise(function(resolve){
 		var precompileCommand =
-			path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
+			'"' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + '" ' +
 			'-hardware="' + path.resolve(TOOLS) + '" ' +
 			'-hardware="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
 			'-libraries="' + path.resolve(TOOLS) + '" ' +
@@ -116,7 +116,7 @@ var compileResetFirmaware = function() {
 			'-ide-version=10607 ' +
 			'-build-path="' + path.resolve(BUILD) + '" ' +
 			'-verbose ' +
-			path.resolve(SKETCHES, 'firmware.ino');
+			'"' + path.resolve(SKETCHES, 'firmware.ino') + '"';
 
 		console.log(precompileCommand);
 
