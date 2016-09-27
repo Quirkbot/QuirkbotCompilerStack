@@ -72,19 +72,19 @@ var setup = function(label) {
 	BUILD = path.resolve(TMP, BUILD_SLUG);
 	SKETCHES = path.resolve(TMP, SKETCHES_SLUG);
 	TOOLS = path.resolve(TMP, TOOLS_SLUG);
-	COMPILE_COMMAND = path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
+	COMPILE_COMMAND = '"' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + '" ' +
 		'-build-options-file="' + path.resolve(BUILD, 'build.options.json') + '" ' +
 		'-build-path="' + path.resolve(BUILD) + '" ' +
 		'-verbose ' +
-		path.resolve(SKETCHES, 'firmware.ino');
+		'"' + path.resolve(SKETCHES, 'firmware.ino') + '"';
 	SIZE_COMMAND =
 		// On "lite", use the avr-gcc direcly from the node_modules
 		(process.env.NODE_ENV === 'lite' ?
-			path.resolve(modulePath('npm-arduino-avr-gcc'), 'tools', 'avr', 'bin', 'avr-size') + ' '
+			'"' + path.resolve(modulePath('npm-arduino-avr-gcc'), 'tools', 'avr', 'bin', 'avr-size') + '" '
 			:
-			path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + ' '
-		)+
-		path.resolve(BUILD, 'firmware.ino.elf');
+			'"' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + '" '
+		) +
+		'"' + path.resolve(BUILD, 'firmware.ino.elf') + '"';
 	return init();
 }
 module.exports.setup = setup;
@@ -127,7 +127,7 @@ var init = function () {
 		var compileResetFirmware = function() {
 			return new Promise(function(resolve){
 				var precompileCommand =
-					path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + ' ' +
+					'"' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + '" ' +
 					'-hardware="' + path.resolve(TOOLS) + '" ' +
 					'-hardware="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
 					'-libraries="' + path.resolve(TOOLS) + '" ' +
@@ -142,7 +142,7 @@ var init = function () {
 					'-ide-version=10607 ' +
 					'-build-path="' + path.resolve(BUILD) + '" ' +
 					'-verbose ' +
-					path.resolve(SKETCHES, 'firmware.ino');
+					'"' + path.resolve(SKETCHES, 'firmware.ino') + '"';
 
 				pass()
 				.then(execute(precompileCommand))
