@@ -288,9 +288,9 @@
       "resolved": "https://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.1.tgz"
     },
     "quirkbot-arduino-builder": {
-      "version": "0.0.2",
-      "from": "quirkbot-arduino-builder@0.0.2",
-      "resolved": "https://registry.npmjs.org/quirkbot-arduino-builder/-/quirkbot-arduino-builder-0.0.2.tgz"
+      "version": "0.0.4",
+      "from": "quirkbot-arduino-builder@0.0.4",
+      "resolved": "https://registry.npmjs.org/quirkbot-arduino-builder/-/quirkbot-arduino-builder-0.0.4.tgz"
     },
     "quirkbot-arduino-hardware": {
       "version": "0.4.4",
@@ -303,8 +303,8 @@
       "resolved": "https://registry.npmjs.org/quirkbot-arduino-library/-/quirkbot-arduino-library-2.4.0.tgz"
     },
     "quirkbot-avr-gcc": {
-      "version": "0.0.6",
-      "from": "quirkbot-avr-gcc@0.0.6"
+      "version": "0.0.8",
+      "from": "quirkbot-avr-gcc@0.0.8"
     },
     "readable-stream": {
       "version": "1.0.31",

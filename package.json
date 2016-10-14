@@ -10,8 +10,8 @@
     "mongoose": "4.5.10",
     "ncp": "2.0.0",
     "newrelic": "1.27.2",
-    "quirkbot-avr-gcc": "0.0.6",
-    "quirkbot-arduino-builder": "0.0.2",
+    "quirkbot-avr-gcc": "0.0.8",
+    "quirkbot-arduino-builder": "0.0.4",
     "quirkbot-arduino-hardware": "0.4.4",
     "quirkbot-arduino-library": "2.4.0",
     "rimraf": "2.4.4",
@@ -22,7 +22,7 @@
     "url": "https://github.com/Quirkbot/QuirkbotCompiler.git"
   },
   "scripts": {
-    "shrinkwrap": "rm -rf node_modules && rm -rf npm-shrinkwrap.json && npm install --production --verbose  --no-bin-links && npm shrinkwrap",
+    "shrinkwrap": "rm -rf node_modules && rm -rf npm-shrinkwrap.json && npm install --production && npm shrinkwrap",
     "deploy:npm": "git checkout master && npm publish",
     "deploy:worker:stage": "git checkout develop && eb deploy quirkbot-compiler-worker-stage",
     "deploy:worker:production": "git checkout develop && eb deploy quirkbot-compiler-worker-production",
