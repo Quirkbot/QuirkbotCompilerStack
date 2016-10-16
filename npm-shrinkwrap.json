@@ -294,15 +294,17 @@
     },
     "quirkbot-arduino-hardware": {
       "version": "0.4.8",
-      "from": "quirkbot-arduino-hardware@0.4.8"
+      "from": "quirkbot-arduino-hardware@0.4.8",
+      "resolved": "https://registry.npmjs.org/quirkbot-arduino-hardware/-/quirkbot-arduino-hardware-0.4.8.tgz"
     },
     "quirkbot-arduino-library": {
       "version": "2.4.1",
-      "from": "quirkbot-arduino-library@2.4.1"
+      "from": "quirkbot-arduino-library@2.4.1",
+      "resolved": "https://registry.npmjs.org/quirkbot-arduino-library/-/quirkbot-arduino-library-2.4.1.tgz"
     },
     "quirkbot-avr-gcc": {
-      "version": "0.0.8",
-      "from": "quirkbot-avr-gcc@0.0.8"
+      "version": "1.0.0",
+      "from": "quirkbot-avr-gcc@1.0.0"
     },
     "readable-stream": {
       "version": "1.0.31",
