@@ -72,7 +72,7 @@ var setup = function(label) {
 	BUILD = path.resolve(TMP, BUILD_SLUG);
 	SKETCHES = path.resolve(TMP, SKETCHES_SLUG);
 	TOOLS = path.resolve(TMP, TOOLS_SLUG);
-	COMPILE_COMMAND = '"' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + '" ' +
+	COMPILE_COMMAND = '"' + path.resolve(TOOLS, 'quirkbot-arduino-builder', 'tools', 'arduino-builder') + '" ' +
 		'-build-options-file="' + path.resolve(BUILD, 'build.options.json') + '" ' +
 		'-build-path="' + path.resolve(BUILD) + '" ' +
 		'-verbose ' +
@@ -80,9 +80,9 @@ var setup = function(label) {
 	SIZE_COMMAND =
 		// On "lite", use the avr-gcc direcly from the node_modules
 		(process.env.NODE_ENV === 'lite' ?
-			'"' + path.resolve(modulePath('npm-arduino-avr-gcc'), 'tools', 'avr', 'bin', 'avr-size') + '" '
+			'"' + path.resolve(modulePath('quirkbot-avr-gcc'), 'tools', 'avr', 'bin', 'avr-size') + '" '
 			:
-			'"' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + '" '
+			'"' + path.resolve(TOOLS, 'quirkbot-avr-gcc', 'tools', 'avr', 'bin', 'avr-size') + '" '
 		) +
 		'"' + path.resolve(BUILD, 'firmware.ino.elf') + '"';
 	return init();
@@ -109,13 +109,13 @@ var init = function () {
 				.then(mkdir(path.resolve(TOOLS)))
 				.then(mkdir(path.resolve(SKETCHES)))
 				.then(copyDir(path.resolve(__dirname, 'firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
-				.then(copyDir(path.resolve(modulePath('npm-arduino-builder')), path.resolve(TOOLS, 'npm-arduino-builder')))
+				.then(copyDir(path.resolve(modulePath('quirkbot-arduino-builder')), path.resolve(TOOLS, 'quirkbot-arduino-builder')))
 				.then(function(){
 					// On "lite", use the avr-gcc direcly from the node_modules
 					if(process.env.NODE_ENV === 'lite') {
 						return;
 					}
-					return copyDir(path.resolve(modulePath('npm-arduino-avr-gcc')), path.resolve(TOOLS, 'npm-arduino-avr-gcc'))()
+					return copyDir(path.resolve(modulePath('quirkbot-avr-gcc')), path.resolve(TOOLS, 'quirkbot-avr-gcc'))()
 				})
 				.then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, HARDWARE_SLUG)))
 				.then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, LIBRARY_SLUG)))
@@ -127,17 +127,17 @@ var init = function () {
 		var compileResetFirmware = function() {
 			return new Promise(function(resolve){
 				var precompileCommand =
-					'"' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + '" ' +
+					'"' + path.resolve(TOOLS, 'quirkbot-arduino-builder', 'tools', 'arduino-builder') + '" ' +
 					'-hardware="' + path.resolve(TOOLS) + '" ' +
-					'-hardware="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
+					'-hardware="' + path.resolve(TOOLS, 'quirkbot-arduino-builder', 'tools', 'hardware') + '" ' +
 					'-libraries="' + path.resolve(TOOLS) + '" ' +
 					// On "lite", use the avr-gcc direcly from the node_modules
 					(process.env.NODE_ENV === 'lite' ?
-						'-tools="' + path.resolve(modulePath('npm-arduino-avr-gcc'), 'tools') + '" '
+						'-tools="' + path.resolve(modulePath('quirkbot-avr-gcc'), 'tools') + '" '
 						:
-						'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" '
+						'-tools="' + path.resolve(TOOLS, 'quirkbot-avr-gcc', 'tools') + '" '
 					)+
-					'-tools="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
+					'-tools="' + path.resolve(TOOLS, 'quirkbot-arduino-builder', 'tools', 'tools') + '" ' +
 					'-fqbn="'+HARDWARE_SLUG+':avr:quirkbot" ' +
 					'-ide-version=10607 ' +
 					'-build-path="' + path.resolve(BUILD) + '" ' +
@@ -212,10 +212,10 @@ var init = function () {
 			return new Promise(function(resolve, reject){
 				pass()
 				.then(deleteDir(path.resolve(SKETCHES)))
-				.then(deleteDir(path.resolve(TOOLS, 'npm-arduino-builder')))
+				.then(deleteDir(path.resolve(TOOLS, 'quirkbot-arduino-builder')))
 				//.then(deleteDir(path.resolve(TOOLS, HARDWARE_SLUG)))
 				//.then(deleteDir(path.resolve(TOOLS, LIBRARY_SLUG)))
-				.then(deleteDir(path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'node_modules')))
+				.then(deleteDir(path.resolve(TOOLS, 'quirkbot-avr-gcc', 'node_modules')))
 				//.then(deleteDir(path.resolve(BUILD, LIBRARY_SLUG)))
 				.then(function() {
 					var RELATIVE_FAST_COMPILE_COMMAND = FAST_COMPILE_COMMAND.split(path.resolve(TOOLS, '..')).join(path.join('..'))

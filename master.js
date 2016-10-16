@@ -59,8 +59,8 @@ var precleanUp = function() {
 		.then(mkdir(path.resolve(TOOLS)))
 		.then(mkdir(path.resolve(SKETCHES)))
 		.then(copyDir(path.resolve(__dirname, 'firmware', 'firmware.ino'), path.resolve(SKETCHES, 'firmware.ino')))
-		.then(copyDir(path.resolve(modulePath('npm-arduino-builder')), path.resolve(TOOLS, 'npm-arduino-builder')))
-		//.then(copyDir(path.resolve(modulePath('npm-arduino-avr-gcc')), path.resolve(TOOLS, 'npm-arduino-avr-gcc')))
+		.then(copyDir(path.resolve(modulePath('quirkbot-arduino-builder')), path.resolve(TOOLS, 'quirkbot-arduino-builder')))
+		//.then(copyDir(path.resolve(modulePath('quirkbot-avr-gcc')), path.resolve(TOOLS, 'quirkbot-avr-gcc')))
 		.then(copyDir(path.resolve(modulePath('quirkbot-arduino-hardware')), path.resolve(TOOLS, HARDWARE_SLUG)))
 		.then(copyDir(path.resolve(modulePath('quirkbot-arduino-library')), path.resolve(TOOLS, LIBRARY_SLUG)))
 		.then(resolve)
@@ -105,13 +105,13 @@ var saveHardwareConfig = function() {
 var compileResetFirmaware = function() {
 	return new Promise(function(resolve){
 		var precompileCommand =
-			'"' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'arduino-builder') + '" ' +
+			'"' + path.resolve(TOOLS, 'quirkbot-arduino-builder', 'tools', 'arduino-builder') + '" ' +
 			'-hardware="' + path.resolve(TOOLS) + '" ' +
-			'-hardware="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'hardware') + '" ' +
+			'-hardware="' + path.resolve(TOOLS, 'quirkbot-arduino-builder', 'tools', 'hardware') + '" ' +
 			'-libraries="' + path.resolve(TOOLS) + '" ' +
-			//'-tools="' + path.resolve(TOOLS, 'npm-arduino-avr-gcc', 'tools') + '" ' +
-			'-tools="' + path.resolve(modulePath('npm-arduino-avr-gcc'), 'tools') + '" ' +
-			'-tools="' + path.resolve(TOOLS, 'npm-arduino-builder', 'arduino-builder', 'tools') + '" ' +
+			//'-tools="' + path.resolve(TOOLS, 'quirkbot-avr-gcc', 'tools') + '" ' +
+			'-tools="' + path.resolve(modulePath('quirkbot-avr-gcc'), 'tools') + '" ' +
+			'-tools="' + path.resolve(TOOLS, 'quirkbot-arduino-builder', 'tools', 'tools') + '" ' +
 			'-fqbn="'+HARDWARE_SLUG+':avr:quirkbot" ' +
 			'-ide-version=10607 ' +
 			'-build-path="' + path.resolve(BUILD) + '" ' +
