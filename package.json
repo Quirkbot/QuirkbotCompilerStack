@@ -12,8 +12,8 @@
     "newrelic": "1.27.2",
     "quirkbot-avr-gcc": "0.0.8",
     "quirkbot-arduino-builder": "0.0.4",
-    "quirkbot-arduino-hardware": "0.4.4",
-    "quirkbot-arduino-library": "2.4.0",
+    "quirkbot-arduino-hardware": "0.4.8",
+    "quirkbot-arduino-library": "2.4.1",
     "rimraf": "2.4.4",
     "throng": "1.0.1"
   },
