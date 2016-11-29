@@ -189,7 +189,7 @@ var init = function () {
 
 					// As windows complains about 'too long command line', we
 					// relativise all the paths, and cd to the root directory
-					FAST_COMPILE_COMMAND = 'cd ' + TMP + ' && ' +
+					FAST_COMPILE_COMMAND = 'cd "' + TMP + '" && ' +
 					build.join(' && ').split(TMP + path.sep).join('');
 
 					if(process.platform === 'win32'){
@@ -334,7 +334,7 @@ var compile = function(sketch){
 			var maxRom = boardSettings['quirkbot.upload.maximum_size'];
 			var maxRam = Math.floor(boardSettings['quirkbot.upload.maximum_data_size'] * 0.8);
 
-			sketch.size = [ rom, maxRom, ram, maxRam ];
+			sketch.size = [ Number(rom), Number(maxRom), Number(ram), Number(maxRam) ];
 
 			if(rom > maxRom){
 				throw 'ROM_MAX';
