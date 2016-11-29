@@ -189,7 +189,7 @@ var init = function () {
 
 					// As windows complains about 'too long command line', we
 					// relativise all the paths, and cd to the root directory
-					FAST_COMPILE_COMMAND = 'cd ' + TMP + ' && ' +
+					FAST_COMPILE_COMMAND = 'cd "' + TMP + '" && ' +
 					build.join(' && ').split(TMP + path.sep).join('');
 
 					if(process.platform === 'win32'){
