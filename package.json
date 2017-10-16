@@ -1,6 +1,6 @@
 {
   "name": "quirkbot-compiler",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "author": "Quirkbot",
   "description": "Cloud service that compiles Quirkbot programs.",
   "homepage": "https://github.com/Quirkbot/QuirkbotCompiler",
@@ -13,7 +13,7 @@
     "quirkbot-avr-gcc": "1.0.0",
     "quirkbot-arduino-builder": "0.0.4",
     "quirkbot-arduino-hardware": "0.4.8",
-    "quirkbot-arduino-library": "2.5.0",
+    "quirkbot-arduino-library": "2.5.1",
     "rimraf": "2.4.4",
     "throng": "1.0.1"
   },
@@ -22,7 +22,7 @@
     "url": "https://github.com/Quirkbot/QuirkbotCompiler.git"
   },
   "scripts": {
-    "shrinkwrap": "rm -rf node_modules && rm -rf npm-shrinkwrap.json && npm install --production && npm shrinkwrap",
+    "shrink": "rm -rf node_modules && rm -rf npm-shrinkwrap.json && npm install --production && npm shrinkwrap",
     "deploy:npm": "git checkout master && npm publish",
     "deploy:worker:stage": "git checkout develop && eb deploy quirkbot-compiler-worker-stage",
     "deploy:worker:production": "git checkout master && eb deploy quirkbot-compiler-worker-production",
