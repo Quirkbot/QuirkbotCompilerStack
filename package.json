@@ -22,7 +22,7 @@
     "url": "https://github.com/Quirkbot/QuirkbotCompiler.git"
   },
   "scripts": {
-    "shrinkwrap": "rm -rf node_modules && rm -rf npm-shrinkwrap.json && npm install --production && npm shrinkwrap",
+    "shrink": "rm -rf node_modules && rm -rf npm-shrinkwrap.json && npm install --production && npm shrinkwrap",
     "deploy:npm": "git checkout master && npm publish",
     "deploy:worker:stage": "git checkout develop && eb deploy quirkbot-compiler-worker-stage",
     "deploy:worker:production": "git checkout master && eb deploy quirkbot-compiler-worker-production",
