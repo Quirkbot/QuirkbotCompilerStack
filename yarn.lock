@@ -254,9 +254,9 @@ quirkbot-arduino-hardware@0.4.8:
   version "0.4.8"
   resolved "https://registry.yarnpkg.com/quirkbot-arduino-hardware/-/quirkbot-arduino-hardware-0.4.8.tgz#6e45ee5a7cc2d35f4e8ede2ddd819e515d4cf110"
 
-quirkbot-arduino-library@2.5.4:
-  version "2.5.4"
-  resolved "https://registry.yarnpkg.com/quirkbot-arduino-library/-/quirkbot-arduino-library-2.5.4.tgz#849a3b60ca23313b9dab22db6e5c80f7d2853d00"
+quirkbot-arduino-library@2.5.5:
+  version "2.5.5"
+  resolved "https://registry.yarnpkg.com/quirkbot-arduino-library/-/quirkbot-arduino-library-2.5.5.tgz#593b8da62670f50df1a59671ab3acd4c970e4f92"
 
 quirkbot-avr-gcc@1.0.0:
   version "1.0.0"
