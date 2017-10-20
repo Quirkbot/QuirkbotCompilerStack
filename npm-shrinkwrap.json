@@ -298,9 +298,9 @@
       "resolved": "https://registry.npmjs.org/quirkbot-arduino-hardware/-/quirkbot-arduino-hardware-0.4.8.tgz"
     },
     "quirkbot-arduino-library": {
-      "version": "2.5.3",
-      "from": "quirkbot-arduino-library@2.5.3",
-      "resolved": "https://registry.npmjs.org/quirkbot-arduino-library/-/quirkbot-arduino-library-2.5.3.tgz"
+      "version": "2.5.4",
+      "from": "quirkbot-arduino-library@2.5.4",
+      "resolved": "https://registry.npmjs.org/quirkbot-arduino-library/-/quirkbot-arduino-library-2.5.4.tgz"
     },
     "quirkbot-avr-gcc": {
       "version": "1.0.0",
