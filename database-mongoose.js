@@ -1,6 +1,3 @@
-"use strict";
-if(global.Promise) var Promise = global.Promise;
-else var Promise = require('es6-promise').Promise;
 var utils = require('./utils');
 var mongoose = require('mongoose');
 var mongooseUrl = process.env.COMPILER_MONGO_URL || process.env.MONGO_URL || 'mongodb://localhost:27017/quirkbot-compiler'

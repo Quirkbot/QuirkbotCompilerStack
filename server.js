@@ -4,16 +4,6 @@ process.on('disconnect', function() {
 	process.exit();
 });
 
-"use strict";
-if(
-	process.env.NEW_RELIC_APP_NAME
-	&& process.env.NEW_RELIC_KEY
-	&& process.env.NEW_RELIC_LEVEL
-) {
-	var newrelic = require( 'newrelic' );
-}
-if(global.Promise) var Promise = global.Promise;
-else var Promise = require('es6-promise').Promise;
 var throng = require('throng');
 var utils = require('./utils');
 var pass = utils.pass;
@@ -64,9 +54,10 @@ var start = function () {
 	server.listen(port);
 	console.log('Serving on port '+port);
 }
-throng(start, {
+throng({
 	workers: process.env.WEB_CONCURRENCY || require('os').cpus().length,
-	lifetime: Infinity
+	lifetime: Infinity,
+	start: start
 });
 /**
  * Index
