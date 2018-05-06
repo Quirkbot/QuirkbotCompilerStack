@@ -1,6 +1,3 @@
-"use strict";
-if(global.Promise) var Promise = global.Promise;
-else var Promise = require('es6-promise').Promise;
 var path = require('path');
 var utils = require('./utils');
 var pass = utils.pass;

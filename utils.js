@@ -1,6 +1,3 @@
-"use strict";
-if(global.Promise) var Promise = global.Promise;
-else var Promise = require('es6-promise').Promise;
 var fs = require('fs');
 var ncp = require('ncp');
 var rimraf = require('rimraf');
@@ -259,4 +256,3 @@ var timeReportEnd = function(key, label){
 	delete _timeReportHash[key];
 }
 exports.timeReportEnd = timeReportEnd;
-
