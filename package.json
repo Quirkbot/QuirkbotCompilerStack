@@ -1,16 +1,16 @@
 {
   "name": "quirkbot-compiler",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "author": "Quirkbot",
   "description": "Cloud service that compiles Quirkbot programs.",
   "homepage": "https://github.com/Quirkbot/QuirkbotCompiler",
   "dependencies": {
     "diskdb": "0.1.17",
-    "mongoose": "5.0.17",
+    "mongoose": "5.7.5",
     "ncp": "2.0.0",
     "quirkbot-arduino-builder": "0.0.5",
-    "quirkbot-arduino-hardware": "0.4.13",
-    "quirkbot-arduino-library": "2.8.1",
+    "quirkbot-arduino-hardware": "0.5.0",
+    "quirkbot-arduino-library": "2.9.0",
     "quirkbot-avr-gcc": "1.0.1",
     "rimraf": "2.6.2",
     "throng": "4.0.0"

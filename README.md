@@ -1,4 +1,6 @@
 # Quirkbot Compiler Stack
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FQuirkbot%2FQuirkbotCompilerStack.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FQuirkbot%2FQuirkbotCompilerStack?ref=badge_shield)
+
 A stack that provides a service that compiles Quirkbot programs.
 
 The service is divided into 2 processes: a webserver and compiler worker.
@@ -79,3 +81,7 @@ $ node compiler.js
 # Updating
 ### Quirkbot Board and library
 See `package.json`.
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FQuirkbot%2FQuirkbotCompilerStack.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FQuirkbot%2FQuirkbotCompilerStack?ref=badge_large)
