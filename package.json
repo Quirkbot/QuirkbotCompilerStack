@@ -9,7 +9,7 @@
     "mongoose": "5.7.5",
     "ncp": "2.0.0",
     "quirkbot-arduino-builder": "0.0.5",
-    "quirkbot-arduino-hardware": "0.5.0",
+    "quirkbot-arduino-hardware": "0.5.1",
     "quirkbot-arduino-library": "2.9.0",
     "quirkbot-avr-gcc": "1.0.1",
     "rimraf": "2.6.2",
