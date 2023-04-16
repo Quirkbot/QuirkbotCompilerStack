@@ -6,7 +6,7 @@
   "homepage": "https://github.com/Quirkbot/QuirkbotCompiler",
   "dependencies": {
     "diskdb": "0.1.17",
-    "mongoose": "5.7.5",
+    "mongoose": "5.13.17",
     "ncp": "2.0.0",
     "quirkbot-arduino-builder": "0.0.5",
     "quirkbot-arduino-hardware": "0.5.3",
